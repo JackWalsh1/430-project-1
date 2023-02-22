@@ -1,0 +1,311 @@
+#gameContainer {
+    min-width: 1000px;
+    max-width: 1200px;
+    height: 90vh;
+    min-height: 800px;
+    margin: 15px auto;
+    border: 1px red solid;
+    background-color: blanchedalmond;
+    border-radius: 10px;
+    user-select: none;
+}
+
+/* mass set to pointer style */
+.gameSelectButton, #backButton, #helpButton, #closeButton, .blackHoleSpace, #enterButton {
+    cursor: pointer;
+}
+
+.isDisabled {
+    pointer-events: none;
+}
+
+/* all titles */
+h1 {
+    text-align: center;
+    margin: 0 auto;
+}
+
+#mainTitle {
+    font-size: 5em;
+    margin-top: .25em;
+    margin-bottom: -.5em;
+}
+
+
+#gameSelectButtonContainer {
+    display: flex;
+    flex-direction: column;
+    margin: 5em;    
+}
+
+/* button styling - width / height / bg color set in javascript */
+.gameSelectButton {
+    font-size: 4em;
+    text-align: center;
+    border: 1px black solid;
+    margin: 3% auto;
+    user-select: none;
+    border: 2px black solid;
+    border-radius: 10px;
+}
+
+/* Pop-Up Rules / Options */
+
+#backDim {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vw;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+    display: block;
+}
+
+#popUpContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: blanchedalmond;
+    border: 3px black solid;
+    width: 600px;
+    height: 700px;
+    z-index: 2;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow: auto;
+}
+
+#closeButton {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 50px;
+    height: 50px;
+    font-weight: bold;
+    font-size: 50px;
+    line-height: 50px;
+    text-align: center;
+    color: red;
+}
+
+#gameInstructions p{
+    text-align: left;
+}
+
+ /* UI Header on top of each game */
+
+#uiHeader {
+    display: grid;
+    grid-template-columns: 150px 1fr 150px;
+    grid-template-rows: 70px;
+    grid-template-areas:
+    "backButton gameTitle helpButton";
+    margin: 20px 0;
+    justify-items: center;
+}
+
+#backButton {grid-area: backButton;}
+#gameTitle {grid-area: gameTitle;}
+#helpButton {grid-area: helpButton;}
+
+#backButton {
+    line-height: 40px;
+    border-radius: 20%;
+    text-align: center;
+    font-size: 4em;
+    color: red;
+}
+
+#gameTitle {
+    font-size: 4em;
+}
+
+#helpButton {
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1.25em;
+    color: black;
+}
+
+/* Black Hole */
+
+.blackHoleGameScene {
+    display: grid;
+    grid-template-columns: 150px 1fr 150px;
+    grid-template-rows: 70px 150px 1fr 150px;
+    grid-template-areas:
+    "uiHeader uiHeader uiHeader"
+    "player1Column gameBoard player2Column"
+    "player1Column gameBoard player2Column"
+    "player1Column gameStatus player2Column";
+}
+
+#uiHeader {grid-area: uiHeader;}
+#blackHoleBoard {grid-area: gameBoard;}
+#player1Pieces {grid-area: player1Column;}
+#player2Pieces {grid-area: player2Column;}
+#gameStatus {grid-area: gameStatus;}
+
+#blackHoleBoard {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+    color:black;
+}
+
+.blackHoleSpace {
+    border: 3px white solid;
+    line-height: 84px;
+    border-radius: 20%;
+    text-align: center;
+    font-size: 2.5em;
+    color: white;
+}
+
+.blackHoleRow {
+    display: flex;
+    margin: 0 auto;
+}
+
+.playerPieces {
+    display: flex;
+    flex-direction: column;
+    margin: 15px auto 0 auto;
+    align-items: center;
+}
+
+.playerName {
+    font-size: 1.5em;
+    margin: -2px auto;
+}
+
+.playerPiece {
+    border: 1px black solid;
+    line-height: 55px;
+    border-radius: 20%;
+    text-align: center;
+    font-size: 2.5em;
+    margin: 2px 0;
+    color: white;
+}
+
+#gameStatus {
+    border: 1px black solid;
+    line-height: 120px;
+    border-radius: 20%;
+    text-align: center;
+    font-size: 2.5em;
+    margin: 10px 0;
+    background-color: thistle;
+}
+
+/* Blind Poker */
+
+.blindPokerGameScene {
+    display: inline-grid;
+    grid-template-columns: 100px 300px 1fr 300px 100px;
+    grid-template-rows: 70px 1fr 150px 150px;
+    grid-template-areas:
+    "uiHeader uiHeader uiHeader uiHeader uiHeader"
+    "player1Chips player1Card currentPot player2Card player2Chips"
+    "gameActions gameActions gameActions gameActions gameActions"
+    "- gameStatus gameStatus gameStatus -";
+}
+
+#uiHeader {grid-area: uiHeader;}
+#currentPot {grid-area: currentPot;}
+#player1ChipContainer {grid-area: player1Chips;}
+#player2ChipContainer {grid-area: player2Chips;}
+#player1Card {grid-area: player1Card;}
+#player2Card {grid-area: player2Card;}
+#gameActions {grid-area: gameActions;}
+#gameStatus {grid-area: gameStatus;}
+
+.playerChipContainer {
+    width: 100px;
+    height: 100px;
+    border: 1px red solid;
+}
+
+/* options */
+
+#player2SwitchContainer {
+    margin: 1% auto;
+}
+
+#enterButton {
+    margin: 20px auto;
+    line-height: 50px;
+}
+
+.label {
+    margin: auto 20px;
+}
+/* switch */
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+  
+  /* Hide default HTML checkbox */
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  /* The slider */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  input:checked + .slider {
+    background-color: #2196F3;
+  }
+  
+  input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+  }
+  
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
