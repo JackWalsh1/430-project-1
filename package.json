@@ -1,0 +1,26 @@
+{
+  "name": "430-project-1",
+  "version": "1.0.0",
+  "description": "Project 1 of IGME-430, changing Project 3 into a multiplayer game.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "pretest": "eslint ./src --fix",
+    "test": "echo \"All tests complete\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JackWalsh1/430-project-1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JackWalsh1/430-project-1/issues"
+  },
+  "homepage": "https://github.com/JackWalsh1/430-project-1#readme",
+  "devDependencies": {
+    "eslint": "^8.35.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.27.5"
+  }
+}
