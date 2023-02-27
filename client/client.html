@@ -110,12 +110,16 @@ const handleResponse = async (response, parseResponse) => {
 		<input id="gameIDField" type="text" name="gameID"/>
 		<label for="player">Player: </label>
 		<select id="playerField" name="player">
-			<option value = "Red">Red</option>
-			<option value = "Blue">Blue</option>
+			<option value="Red">Red</option>
+			<option value="Blue">Blue</option>
 		</select>
+		<select id="methodSelect">
+			<option value="get">GET</option>
+			<option value="head">HEAD</option>
+		  </select>
 		<input type="submit" value="Get Thing" />
 	  </form>
-	  <form id="userForm" action="/getUsers" method="get">
+	  <form id="postForm" method="post">
 		<select id='urlField'>
 		  <option value='/getUsers'>/getUsers</option>
 		  <option value='/notReal'>/notReal</option>

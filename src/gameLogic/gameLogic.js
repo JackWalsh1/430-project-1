@@ -1,5 +1,3 @@
-// game code
-
 // global containers needed
 let textNode;
 let gameContainer;
