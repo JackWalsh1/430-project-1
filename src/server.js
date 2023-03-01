@@ -21,6 +21,7 @@ const routes = {
     notFound: gameHandler.notFoundMeta,
   },
   POST: {
+    '/createGame': gameHandler.createGame,
     '/sendMove': gameHandler.addUser,
     notFound: gameHandler.notFound,
   },
@@ -40,7 +41,7 @@ const onRequest = (request, response) => {
   if (routes[request.method][parsedUrl.pathname]) {
     // special parse body for post
     if (request.method === 'POST') {
-      parseBody(request, response, gameHandler.addUser);
+      parseBody(request, response);
       return routes[request.method][parsedUrl.pathname];
     }
 

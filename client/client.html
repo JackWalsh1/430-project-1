@@ -18,17 +18,8 @@ const handleResponse = async (response, parseResponse) => {
 
 	// get content and then create h1 / p if needed - otherwise, just get them
 	const content = document.querySelector('#game');
-	if (document.body.contains(document.querySelector("#statusTitle"))) {
-	h1 = document.querySelector('#statusTitle');
-	p = document.querySelector('#statusMessage');
-	} else {
-	h1 = document.createElement('h1');
-	h1.setAttribute("id", "statusTitle");
-	p = document.createElement('p');
-	p.setAttribute("id", "statusMessage");
-	}
-
-
+	h1 = document.querySelector('#h1');
+	p = document.querySelector('#p');
 
 	const statusCodes = {
 	200: `<b>Success</b>`,
@@ -62,6 +53,10 @@ const handleResponse = async (response, parseResponse) => {
 	const url = getUserForm.querySelector('#urlField');
 	const method = getUserForm.querySelector('#methodSelect');
 
+	if (url.value === "/getGame" || url.value === "/getGameState") {
+		url += `?gameID=${getUserForm.querySelector("#gameIDField").value}`;
+	}
+
 	// build response for get OR head using url / method consts
 	let response = await fetch (url.value, {
 		method: method.value,
@@ -74,18 +69,18 @@ const handleResponse = async (response, parseResponse) => {
 	handleResponse(response, method.value === 'get');
 	};
 
-	const sendPost = async (addUserForm) => {
+	const sendPost = async (postForm) => {
 
-	const action = addUserForm.getAttribute('action');
-	const method = addUserForm.getAttribute('method');
+	const url = postForm.querySelector('#urlField');
 
-	const name = nameForm.querySelector('#nameField');
-	const age = nameForm.querySelector('#ageField');
+	const gameID = postForm.querySelector('#gameIDField');
+	const player = postForm.querySelector('#playerField');
+	const space = postForm.querySelector('#spaceField');
 
-	const formData = `name=${name.value}&age=${age.value}`; 
+	const formData = `gameID=${gameID.value}&player=${player.value}&space=${space.value}`; 
 
-	let response = await fetch(action, {
-		method: method,
+	let response = await fetch(url, {
+		method: "POST",
 		headers: {
 		'Content-Type': 'application/x-www-form-urlencoded',
 		'Accept': 'application/json',
@@ -98,7 +93,25 @@ const handleResponse = async (response, parseResponse) => {
 	};
 
 	const init = () => {
+	  const getForm = document.querySelector('#getForm');
+      const postForm = document.querySelector('#postForm');
 
+	  // create functions to override initial form functions
+	  const getFormAction = (e) => {
+        e.preventDefault();
+        sendGetRequest(getForm);
+        return false;
+      };
+
+      const postFormAction = (e) => {
+        e.preventDefault();
+        sendPost(addForm);
+        return false;
+      };
+
+	  // attach evt listeners to forms
+	  getForm.addEventListener('submit', getFormAction);
+      addForm.addEventListener('submit', postFormAction);
 	};
 
 	window.onload = init;
@@ -108,10 +121,11 @@ const handleResponse = async (response, parseResponse) => {
 	<form id="getForm" method="get">
 		<label for="gameID">GameID </label>
 		<input id="gameIDField" type="text" name="gameID"/>
-		<label for="player">Player: </label>
-		<select id="playerField" name="player">
-			<option value="Red">Red</option>
-			<option value="Blue">Blue</option>
+		<label for="urlID">URL: </label>
+		<select id='urlField'>
+		  <option value='/getGame'>/getGame</option>
+		  <option value='/getGameState'>/getGameState</option>
+		  <option value='/notFound'>/notFound</option>
 		</select>
 		<select id="methodSelect">
 			<option value="get">GET</option>
@@ -119,17 +133,35 @@ const handleResponse = async (response, parseResponse) => {
 		  </select>
 		<input type="submit" value="Get Thing" />
 	  </form>
+	  <hr>
 	  <form id="postForm" method="post">
+		<label for="gameID">GameID: </label>
+		<input id="gameIDField" type="text" name="gameID"/>
+		<label for="player">Player: </label>
+		<select id="playerField" name="player">
+			<option value="Red">Red</option>
+			<option value="Blue">Blue</option>
+		</select>
+		<label for="space">Player: </label>
+		<select id='spaceField' name="space">
+			<option value="A">A</option>
+			<option value="B">B</option>
+			<option value="C">C</option>
+			<option value="D">D</option>
+			<option value="E">E</option>
+			<option value="F">F</option>
+		</select>
+		<label for="urlID">URL: </label>
 		<select id='urlField'>
-		  <option value='/getUsers'>/getUsers</option>
-		  <option value='/notReal'>/notReal</option>
+		  <option value='/createGame'>/createGame</option>
+		  <option value='/sendMove'>/sendMove</option>
 		</select>
-		<select id="methodSelect">
-		  <option value="get">GET</option>
-		  <option value="head">HEAD</option>
-		</select>
-		<input type="submit" value="Get User" />
+		<input type="submit" value="Post Thing" />
 	  </form>
+	  <div id = "result">
+		<h1 id="h1">No return yet...</h1>
+		<p id="p"></p>
+	  </div>
 </div>
 </body>
 </html>

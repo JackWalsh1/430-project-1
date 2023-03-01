@@ -1,10 +1,15 @@
 // 'database' of all users
 const games = {};
+const gameIDs = {};
+
+// generic statusCodes / messages that cna be overwritten
+let statusCode;
+let message;
 
 // structure of a game obj
 /*
 game {
-    id: random 8-char string
+    id: random 4-letter string (ala Jackbox)
     active: bool
     moveCount: int between 0 - 20
     gameState: {
@@ -32,6 +37,26 @@ const getGame = (request, response, queryParams) => {
   // look to see if id is a direct match
   // if so, return it
   // if no such id exists, prompt if you want to make it (aka send to createGame w/ id)
+  let gameIDs = Object.keys(gameIDs);
+
+  if (!queryParams.gameID) {
+    message = 'Missing gameID query parameter';
+    statusCode = 400;
+  } else {
+    for(let game in gameIDs) {
+      if (queryParams.gameID === game) {
+        console.log("found game");
+        message = 'Game with ID found.';
+        statusCode = 200;
+        break;
+      }
+    }
+
+    message = 'GameID is not one already stored in system. Try using that to create a game!';
+    statusCode = 200; 
+  }
+
+
 };
 
 const getGameState = (request, response, queryParams) => {
