@@ -27,6 +27,27 @@ const routes = {
   },
 };
 
+const parseBody = (request, response, handler) => {
+  const body = [];
+
+  request.on('error', (err) => {
+    console.dir(err);
+    response.statusCode = 400;
+    response.end();
+  });
+
+  request.on('data', (chunk) => {
+    console.log(chunk);
+    body.push(chunk);
+  });
+
+  request.on('end', () => {
+    const bodyString = Buffer.concat(body).toString();
+    const bodyParams = query.parse(bodyString);
+    handler(request, response, bodyParams);
+  });
+};
+
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url);
   const params = query.parse(parsedUrl.query);
@@ -41,7 +62,7 @@ const onRequest = (request, response) => {
   if (routes[request.method][parsedUrl.pathname]) {
     // special parse body for post
     if (request.method === 'POST') {
-      parseBody(request, response);
+      parseBody(request, response, routes[request.method][parsedUrl.pathname]);
       return routes[request.method][parsedUrl.pathname];
     }
 

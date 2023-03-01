@@ -92,9 +92,40 @@ const notFoundMeta = (request, response) => {
 // POST methods
 
 const createGame = (request, response, body) => {
-  // create game obj
-  // populate it with relevant info
-  // send it to games "database"
+  /// basic info of game - ID will be changed
+  let gameJSON = {
+    id: "0000",
+    active: true,
+    moveCount: 0,
+    gameState: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U]
+  };
+
+  let responseJSON = {
+    message: ""
+  }
+
+  body.gameID = body.gameID.toUpperCase();
+
+  // if valid 
+  if (body.gameID) {
+    // check if length 4 / entirely letters
+    if (body.gameID != 4 && !/[^A-Z]+$/.test(body.gameID)) {
+
+    } else if (!findGame(body.gameID)) {
+      //new game with that id that ID
+      gameJSON.id = body.gameID;
+      respond(request, response, )
+      // gameID is valid but already exists
+    } else if (body.gameID == 4) {
+      responseJSON.message = "Game already exists.";
+      // gameID is invalid
+    } else {
+      responseJSON.message = "GameID is invalid - must be 4 capital letters.";
+    }
+
+  } else {
+    gameJSON.id = createNewGameID();
+  }
 };
 
 const sendMove = (request, response, body) => {
@@ -104,6 +135,35 @@ const sendMove = (request, response, body) => {
   // change gameState of game to reflect new move
   // send back
 };
+
+const findGame = (gameID) => {
+  let gameExists = false;
+  for (existingIDs in gameIDs) {
+    if (gameID === existingIDs) {
+      gameExists = true;
+    }
+  }
+  return gameExists;
+}
+
+const createNewGameID = () => {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let newGameID;
+  let notUnique = true;
+  while (notUnique) {
+    for (let i = 0; i < 4; i++) {
+      newGameID += characters[Math.floor(Math.random() * characters.length)];
+    }
+    notUnique = false;
+    for (existingGameID in gameIDs) {
+      if (existingGameID === newGameID) {
+        notUnique = true;
+      }
+    }
+  }
+
+  return newGameID;
+}
 
 module.exports = {
   getGame,
