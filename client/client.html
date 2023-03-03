@@ -105,13 +105,13 @@ const handleResponse = async (response, parseResponse) => {
 
       const postFormAction = (e) => {
         e.preventDefault();
-        sendPost(addForm);
+        sendPost(postForm);
         return false;
       };
 
 	  // attach evt listeners to forms
 	  getForm.addEventListener('submit', getFormAction);
-      addForm.addEventListener('submit', postFormAction);
+      postForm.addEventListener('submit', postFormAction);
 	};
 
 	window.onload = init;

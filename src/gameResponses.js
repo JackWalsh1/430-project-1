@@ -5,6 +5,7 @@ const gameIDs = {};
 // generic statusCodes / messages that cna be overwritten
 let statusCode;
 let message;
+let errorJSON;
 
 // structure of a game obj
 /*
@@ -99,10 +100,7 @@ const createGame = (request, response, body) => {
     moveCount: 0,
     gameState: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U]
   };
-
-  let responseJSON = {
-    message: ""
-  }
+  errorJSON = {};
 
   body.gameID = body.gameID.toUpperCase();
 
@@ -114,26 +112,53 @@ const createGame = (request, response, body) => {
     } else if (!findGame(body.gameID)) {
       //new game with that id that ID
       gameJSON.id = body.gameID;
-      respond(request, response, )
       // gameID is valid but already exists
-    } else if (body.gameID == 4) {
-      responseJSON.message = "Game already exists.";
-      // gameID is invalid
-    } else {
-      responseJSON.message = "GameID is invalid - must be 4 capital letters.";
+    } else  {
+      if (body.gameID == 4) {
+        errorJSON.message = "Game already exists.";
+        // gameID is invalid
+      } else {
+        errorJSON.message = "GameID is invalid - must be 4 capital letters.";
+      }
+      errorJSON.id = 'invalidParams';
     }
-
   } else {
     gameJSON.id = createNewGameID();
+  }
+
+  // valid game
+  if (errorJSON !== {}) {
+    respond(request, response, statusCode, errorJSON);
+  } else {
+    respond(request, response, statusCode, gameJSON);
   }
 };
 
 const sendMove = (request, response, body) => {
-  // call getGame
+  // get game
   // get button pushed
   // get current state of game
   // change gameState of game to reflect new move
   // send back
+  body.gameID = body.gameID.toUpperCase();
+  let gameID;
+
+  // if valid 
+  if (body.gameID) {
+    // check if length 4 / entirely letters
+    if (checkForValidGame(body.gameID)) {
+      gameID = body.gameID;
+    }
+  } else {
+    respond(request, response, statusCode, errorJSON);
+  }
+
+  // valid game
+  if (errorJSON !== {}) {
+    respond(request, response, statusCode, errorJSON);
+  } else {
+    respond(request, response, statusCode, gameJSON);
+  }
 };
 
 const findGame = (gameID) => {
@@ -143,7 +168,29 @@ const findGame = (gameID) => {
       gameExists = true;
     }
   }
+
   return gameExists;
+}
+
+const checkForValidGame = (gameID) => {
+  errorJSON = {};
+    // check if length 4 / entirely letters
+    if (gameID != 4 && !/[^A-Z]+$/.test(gameID)) {
+
+    } else if (!findGame(body.gameID)) {
+      //new game with that id that ID
+      gameJSON.id = body.gameID;
+      // gameID is valid but already exists
+    } else  {
+      if (body.gameID == 4) {
+        errorJSON.message = "Game already exists.";
+        // gameID is invalid
+      } else {
+        errorJSON.message = "GameID is invalid - must be 4 capital letters.";
+      }
+      errorJSON.id = 'invalidParams';
+    }
+  return (errorJSON !== {});
 }
 
 const createNewGameID = () => {
