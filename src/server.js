@@ -58,6 +58,7 @@ const onRequest = (request, response) => {
     return routes.HEAD.notFound(request, response);
   }
 
+  console.log("onrequest");
   // if path exists
   if (routes[request.method][parsedUrl.pathname]) {
     // special parse body for post

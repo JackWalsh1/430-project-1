@@ -6,6 +6,8 @@ const gameIDs = {};
 let statusCode;
 let message;
 let errorJSON;
+let id;
+let responseJSON;
 
 // structure of a game obj
 /*
@@ -22,6 +24,7 @@ game {
 // response objects
 const respond = (request, response, status, content) => {
   response.writeHead(status, { 'Content-Type': 'application/json' });
+  console.log("respond");
   response.write(JSON.stringify(content));
   response.end();
 };
@@ -39,7 +42,7 @@ const getGame = (request, response, queryParams) => {
   // if so, return it
   // if no such id exists, prompt if you want to make it (aka send to createGame w/ id)
   let gameIDs = Object.keys(gameIDs);
-
+  console.log("getGame");
   if (!queryParams.gameID) {
     message = 'Missing gameID query parameter';
     statusCode = 400;
@@ -54,10 +57,17 @@ const getGame = (request, response, queryParams) => {
     }
 
     message = 'GameID is not one already stored in system. Try using that to create a game!';
-    statusCode = 200; 
+    id = 'gameDoesNotExist';
+    statusCode = 400; 
   }
 
 
+  responseJSON = {
+    message,
+    id
+  };
+
+  respond(request, response, statusCode, responseJSON);
 };
 
 const getGameState = (request, response, queryParams) => {

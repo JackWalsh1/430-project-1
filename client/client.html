@@ -8,7 +8,6 @@
 	<link rel="stylesheet" href="style.css" type ="text/css">
 </head>
 <body>
-	<!-- My JS files -->
 <script>
 const handleResponse = async (response, parseResponse) => {
 
@@ -29,14 +28,15 @@ const handleResponse = async (response, parseResponse) => {
 	404: `<b>Not Found</b>`
 	};
 
+	console.log("handleResponse");
 	h1.innerHTML = statusCodes[response.status];
 	if (parseResponse && response.status !== 204) {
 	const parsedResponse = await response.json();
 	// if the message is good (aka is the users obj)
-	p.innerHTML = response.status === 200 
 	// then display that
-	? JSON.stringify(parsedResponse.users)
 	// otherwise, display the error
+	p.innerHTML = response.status === 200 
+	? JSON.stringify(parsedResponse.users)
 	: `Message: ${JSON.stringify(parsedResponse.message)}`;
 	} else {
 	p.innerHTML = "";
@@ -47,18 +47,20 @@ const handleResponse = async (response, parseResponse) => {
 	content.appendChild(p);    
 	};
 
-	const sendGetRequest = async (getUserForm) => {
+	const sendGetRequest = async (getForm) => {
 
 	// get url / method from form, as it can change
-	const url = getUserForm.querySelector('#urlField');
-	const method = getUserForm.querySelector('#methodSelect');
+	const url = getForm.querySelector('#urlField');
+	let urlWithParams;
+	const method = getForm.querySelector('#methodSelect');
 
+	urlWithParams = url.value;
 	if (url.value === "/getGame" || url.value === "/getGameState") {
-		url += `?gameID=${getUserForm.querySelector("#gameIDField").value}`;
+		urlWithParams += `?gameID=${getForm.querySelector("#gameIDField").value}`;
 	}
 
 	// build response for get OR head using url / method consts
-	let response = await fetch (url.value, {
+	let response = await fetch (urlWithParams, {
 		method: method.value,
 		headers: {
 		'Accept': 'application/json'
