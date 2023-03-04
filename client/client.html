@@ -16,7 +16,7 @@ const handleResponse = async (response, parseResponse) => {
 	let p;
 
 	// get content and then create h1 / p if needed - otherwise, just get them
-	const content = document.querySelector('#game');
+	const content = document.querySelector('#result');
 	h1 = document.querySelector('#h1');
 	p = document.querySelector('#p');
 
@@ -32,11 +32,12 @@ const handleResponse = async (response, parseResponse) => {
 	h1.innerHTML = statusCodes[response.status];
 	if (parseResponse && response.status !== 204) {
 	const parsedResponse = await response.json();
+
 	// if the message is good (aka is the users obj)
 	// then display that
 	// otherwise, display the error
 	p.innerHTML = response.status === 200 
-	? JSON.stringify(parsedResponse.users)
+	? JSON.stringify(parsedResponse.message)
 	: `Message: ${JSON.stringify(parsedResponse.message)}`;
 	} else {
 	p.innerHTML = "";
