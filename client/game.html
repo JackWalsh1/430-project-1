@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<title> Black Hole </title>
+	<!-- bootstrap reset -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="style.css" type ="text/css">
+    <script src="/src/webComponents/webCpt-navbar.js"></script>
+    <script src="/src/webComponents/webCpt-title.js"></script>
+</head>
+<body>
+<script>
+const handleResponse = async (response, parseResponse) => {
+
+	// get json back
+	let h1;
+	let p;
+
+	// get content and then create h1 / p if needed - otherwise, just get them
+	const content = document.querySelector('#result');
+	h1 = document.querySelector('#h1');
+	p = document.querySelector('#p');
+
+	const statusCodes = {
+	200: `<b>Success</b>`,
+	201: `<b>Created</b>`,
+	204: `<b>Updated (No Content)</b>`,
+	400: `<b>Bad Request</b>`,
+	404: `<b>Not Found</b>`,
+	409: `<b>Data Conflict</b>`
+	};
+
+	console.log("handleResponse");
+	h1.innerHTML = statusCodes[response.status];
+	if (parseResponse && response.status !== 204) {
+	const parsedResponse = await response.json();
+
+	// if the message is good (aka is the users obj)
+	// then display that
+	// otherwise, display the error
+	p.innerHTML = response.status === 200 
+	? JSON.stringify(parsedResponse.message)
+	: `Message: ${JSON.stringify(parsedResponse.message)}`;
+	} else {
+	p.innerHTML = "";
+	}
+
+	//Add the elements to the screen.
+	content.appendChild(h1);
+	content.appendChild(p);    
+	};
+
+	const sendGetRequest = async (getForm) => {
+
+	// get url / method from form, as it can change
+	const url = getForm.querySelector('#urlField');
+	let urlWithParams;
+	const method = getForm.querySelector('#methodSelect');
+
+	urlWithParams = url.value;
+	if (url.value === "/getGame" || url.value === "/getGameState") {
+		urlWithParams += `?gameID=${getForm.querySelector("#gameIDField").value}`;
+	}
+
+	// build response for get OR head using url / method consts
+	let response = await fetch (urlWithParams, {
+		method: method.value,
+		headers: {
+		'Accept': 'application/json'
+		},
+	});
+
+	// handle the response
+	handleResponse(response, method.value === 'get');
+	};
+
+	const sendPost = async (postForm) => {
+
+	const url = postForm.querySelector('#urlField');
+
+	const gameID = postForm.querySelector('#gameIDField');
+	const player = postForm.querySelector('#playerField');
+	const space = postForm.querySelector('#spaceField');
+
+	const formData = `gameID=${gameID.value}&player=${player.value}&space=${space.value}`; 
+
+	let response = await fetch(url.value, {
+		method: "POST",
+		headers: {
+		'Content-Type': 'application/x-www-form-urlencoded',
+		'Accept': 'application/json',
+		},
+		body: formData,
+	});
+
+	// always print a response for post
+	handleResponse(response, true);
+	};
+
+	const init = () => {
+	  const getForm = document.querySelector('#getForm');
+      const postForm = document.querySelector('#postForm');
+
+	  // create functions to override initial form functions
+	  const getFormAction = (e) => {
+        e.preventDefault();
+        sendGetRequest(getForm);
+        return false;
+      };
+
+      const postFormAction = (e) => {
+        e.preventDefault();
+        sendPost(postForm);
+        return false;
+      };
+
+	  // attach evt listeners to forms
+	  getForm.addEventListener('submit', getFormAction);
+      postForm.addEventListener('submit', postFormAction);
+
+
+	};
+
+	window.onload = init;
+</script>
+
+  <!-- navbar web component - check src/dadabase-navbar -->
+<webcpt-navbar data-current-page="app"></webcpt-navbar>
+
+<webcpt-title data-text="Black Hole"></webcpt-title>;
+
+
+<div id="gameContainer">
+	<h3 class="h3 mx-6">Create or Join a Game!</h3>
+	<form id="getForm" method="get" class="container">
+        <div class="field is-grouped is-vcentered
+        " >
+            <label class="label" for="gameID">GameID</label>
+            <div class = "control">
+                <input id="gameIDField" type="text" name="gameID" placeholder="4-Letter Game ID"/>
+            </div>
+            <div class = "control">
+                <input type="submit" value="Join Game"/>
+            </div>
+        </div>
+	</form>
+	<hr>
+	<form id="postForm" method="post" class="container">
+        <div class="field is-grouped">
+            <label class="label" for="gameID">GameID (optional)</label>
+            <div class="control">
+                <input id="gameIDField" type="text" name="gameID" placeholder="4-Letter Game ID"/>
+            </div>
+            <div class = "control">
+                <input type="submit" value="Create New Game"/>
+            </div>
+        </div>
+	</form>
+	  <div id = "result">
+		<h1 id="h1">No return yet...</h1>
+		<p id="p"></p>
+	  </div>
+</div>
+</body>
+</html>
