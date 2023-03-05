@@ -22,7 +22,7 @@ const routes = {
   },
   POST: {
     '/createGame': gameHandler.createGame,
-    '/sendMove': gameHandler.addUser,
+    '/sendMove': gameHandler.sendMove,
     notFound: gameHandler.notFound,
   },
 };
@@ -31,13 +31,11 @@ const parseBody = (request, response, handler) => {
   const body = [];
 
   request.on('error', (err) => {
-    console.dir(err);
     response.statusCode = 400;
     response.end();
   });
 
   request.on('data', (chunk) => {
-    console.log(chunk);
     body.push(chunk);
   });
 
