@@ -10,10 +10,11 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 const routes = {
   GET: {
     '/': appHandler.getGamePage,
-    '/getAPITest': appHandler.getIndex,
+    '/getAPITest': appHandler.getAPITest,
     '/getGamePage': appHandler.getGamePage,
     '/getDocumentation': appHandler.getDocumentation,
     '/bundle.js': appHandler.getBundle,
+    '/scriptTagCode.js': appHandler.getBundle,
     '/style.css': appHandler.getCSS,
     '/getGame': gameHandler.getGame,
     '/getGameState': gameHandler.getGameState,
