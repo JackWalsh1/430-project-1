@@ -203,7 +203,7 @@ const createGame = (request, response, body) => {
 
     responseJSON = {
       message: "Game created successfully with ID " + gameJSON.id,
-      game: gameJSON
+      gameID: gameJSON.id
     }
     respond(request, response, 201, responseJSON);
   }
@@ -232,10 +232,10 @@ const sendMove = (request, response, body) => {
       // check if game is still editable
       if (game.active) {
         // check if player CAN currently place a tile
-        if ((player === "Red" && game.turn % 2 == 0) || 
-        (player === "Blue" && game.turn % 2 == 1)) {
+        if ((player === "Red" && game.moveCount % 2 == 0) || 
+        (player === "Blue" && game.moveCount % 2 == 1)) {
           // (0, 1 -> 1; 2, 3 -> 2;  4, 5 -> 3;... 18, 19 -> 10; 20 -> FINISH)
-          const pieceValue = Math.floor(game.moveCount % 2) + 1;
+          const pieceValue = Math.floor(game.moveCount / 2) + 1;
           /*
           gameState[char - 65] gets ascii value, since they're all organized in order
           player[0] is R or B - marking player

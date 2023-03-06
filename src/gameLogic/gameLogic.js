@@ -11,64 +11,27 @@ let player1Tiles = [];
 let player2Tiles = [];
 
 let blackHoleBoardArray;
+  
 
-// load game selection screen
-function GameSelect() {
-    // initialize container for all elements
-    gameContainer = document.querySelector('#gameContainer');
-    resetGame();
-  
-    // create header
-    const header = document.createElement('h1');
-    header.setAttribute('id', 'mainTitle');
-    textNode = document.createTextNode('Black Hole');
-    header.appendChild(textNode);
-  
-    // create button container for css use
-  
-    const gameSelectButtonContainer = document.createElement('div');
-    gameSelectButtonContainer.setAttribute('id', 'gameSelectButtonContainer');
-  
-    // create buttons
-    const blackHoleButton = new Button(
-      'blackHoleButton',
-      'gameSelectButton',
-      '400px',
-      '100px',
-      '#FFFF00',
-      'Black Hole',
-      'blackHoleLoad()',
-    );
-  
-    blackHoleButton.createButton();
-  
-    const creditsButton = new Button(
-      'gyulHapButton',
-      'gameSelectButton',
-      '400px',
-      '100px',
-      '#FFFF00',
-      'Credits',
-      "loadHelpBox('credits')",
-    );
-  
-    creditsButton.createButton();
-  
-    gameSelectButtonContainer.append(blackHoleButton.div, /* blindPokerButton, gyulHapButton, */ creditsButton.div);
-  
-    // append all elements
-    gameContainer.append(header, gameSelectButtonContainer);
-  }
-  
   // load general structure for black hole
-  function blackHoleLoad() {
+  const blackHoleLoad = async (gameID) => {
     // reset game
     resetGame('blackHole');
     createHeader('blackHole');
-  
+
+    // get gamestate
+    let response = await fetch ("/getGameState?gameID=" + gameID, {
+      method: "GET",
+      headers: {
+      'Accept': 'application/json'
+      },
+    });
+
+    let game = response.game;
+
     // set initial game variables
-    round = 1;
-    currentPlayer = 1;
+    round = Math.floor(game.moveCount / 2) + 1;
+    currentPlayer = (game.moveCount % 2 === 0) ? 1 : 2;
     remainingTiles = [];
     player1Tiles = [];
     player2Tiles = [];
@@ -352,4 +315,8 @@ function GameSelect() {
       result = `${document.body.querySelector('#player2Name').innerHTML} has won by a score of ${player2Score} to ${player1Score}!`;
     }
     document.body.querySelector('#gameStatus').innerHTML = result;
+  }
+
+  module.exports = {
+    blackHoleLoad
   }

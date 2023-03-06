@@ -13,6 +13,7 @@ const routes = {
     '/getAPITest': appHandler.getIndex,
     '/getGamePage': appHandler.getGamePage,
     '/getDocumentation': appHandler.getDocumentation,
+    '/bundle.js': appHandler.getBundle,
     '/style.css': appHandler.getCSS,
     '/getGame': gameHandler.getGame,
     '/getGameState': gameHandler.getGameState,

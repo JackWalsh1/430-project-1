@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node ./src/server.js",
     "pretest": "eslint ./src --fix",
-    "test": "echo \"All tests complete\""
+    "test": "echo \"All tests complete\"",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -22,9 +23,11 @@
     "eslint": "^8.35.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.27.5",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "webpack-cli": "^5.0.1"
   },
   "dependencies": {
-    "bulma": "^0.9.4"
+    "bulma": "^0.9.4",
+    "webpack": "^5.75.0"
   }
 }
