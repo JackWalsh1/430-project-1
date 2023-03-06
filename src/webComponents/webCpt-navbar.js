@@ -1,5 +1,5 @@
-const template = document.createElement("template");
-template.innerHTML = `
+const navbarTemplate = document.createElement("template");
+navbarTemplate.innerHTML = `
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
 <script src="https://kit.fontawesome.com/0fbd73455f.js" crossorigin="anonymous"></script>
 
@@ -36,8 +36,8 @@ class WebCptNavbar extends HTMLElement{
       super();
         // attach shadow DOM tree to instance - creates .shadowroot
       this.attachShadow({mode: "open"});
-        // Clone 'template' and append it
-      this.shadowRoot.appendChild(template.content.cloneNode(true));
+        // Clone 'navbarTemplate' and append it
+      this.shadowRoot.appendChild(navbarTemplate.content.cloneNode(true));
 
 
     }

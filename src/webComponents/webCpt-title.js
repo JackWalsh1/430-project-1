@@ -1,7 +1,7 @@
-const template = document.createElement("template");
-template.innerHTML = `
+const titleTemplate = document.createElement("template");
+titleTemplate.innerHTML = `
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
-<div class="title has-text-light ml-3 pt-3"></div>
+<div class="title mt-3 has-text-centered"></div>
 `;
 
 class WebCptTitle extends HTMLElement{
@@ -9,8 +9,8 @@ class WebCptTitle extends HTMLElement{
       super();
         // attach shadow DOM tree to instance - creates .shadowroot
       this.attachShadow({mode: "open"});
-        // Clone 'template' and append it
-      this.shadowRoot.appendChild(template.content.cloneNode(true));
+        // Clone 'titleTemplate' and append it
+      this.shadowRoot.appendChild(titleTemplate.content.cloneNode(true));
     }
 
     connectedCallback() {      
