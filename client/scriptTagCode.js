@@ -1,7 +1,10 @@
+import {blackHoleLoad} from "../src/gameLogic/gameLogic.js";
+
 const handleResponse = async (response, parseResponse) => {
-	const gameLoad = require('../src/gameLogic/gameLogic.js');
 	if (response.status === 200 || response.status === 201) {
-		return gameLoad.blackHoleLoad(response.gameID);
+		let responseJSON = await response.json();
+		console.log(responseJSON);
+		return blackHoleLoad(responseJSON.gameID);
 	}
 	// get json back
 	let h1;
@@ -94,9 +97,5 @@ const init = () => {
 	const h1 = document.querySelector("#h1");
 
 	h1.innerHTML = "script tag worked!";
-
-	debugger;
 };
-
-debugger;
 window.onload = init;

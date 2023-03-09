@@ -1,6 +1,6 @@
 // 'database' of all users
 const games = {};
-let gameIDs = [];
+const gameIDs = [];
 
 // generic statusCodes / messages that cna be overwritten
 let statusCode;
@@ -41,16 +41,16 @@ const getGame = (request, response, queryParams) => {
   id = '';
   // set statusCode to impossible - is going to be changed
   statusCode = 0;
-  
+
   if (!queryParams.gameID) {
     message = 'Missing gameID query parameter';
     id = 'invalidParams';
     statusCode = 400;
   } else {
     queryParams.gameID = queryParams.gameID.toUpperCase();
-    for(let game of gameIDs) {
+    for (const game of gameIDs) {
       if (queryParams.gameID === game) {
-        console.log("found game");
+        console.log('found game');
         message = 'Game with ID found.';
         statusCode = 200;
         break;
@@ -66,7 +66,7 @@ const getGame = (request, response, queryParams) => {
   }
 
   responseJSON = {
-    message: message
+    message,
   };
 
   if (id) {
@@ -82,22 +82,22 @@ const getGameState = (request, response, queryParams) => {
   if (!queryParams.gameID) {
     responseJSON = {
       message: 'Missing gameID query parameter',
-      id:'invalidParams'
-    }
+      id: 'invalidParams',
+    };
     statusCode = 400;
-      // find if game requested exists
+    // find if game requested exists
   } else if (findGame(queryParams.gameID.toUpperCase())) {
     responseJSON = {
       message: 'Game found - returned under game in JSON',
-      game: games[queryParams.gameID.toUpperCase()]
-    }
+      game: games[queryParams.gameID.toUpperCase()],
+    };
     statusCode = 200;
   } else {
     // if game doesn't exist, throw out 404
     responseJSON = {
       message: 'GameID does not exist',
-      id: 'gameDoesNotExist'
-    }
+      id: 'gameDoesNotExist',
+    };
     statusCode = 404;
   }
   respond(request, response, statusCode, responseJSON);
@@ -119,18 +119,18 @@ const getGameMeta = (request, response, queryParams) => {
 
   // set statusCode to impossible - is going to be changed
   statusCode = 0;
-  
-  console.log("getGame");
+
+  console.log('getGame');
   if (!queryParams.gameID) {
     statusCode = 400;
   } else {
-    for(let game of gameIDs) {
+    for (const game of gameIDs) {
       if (queryParams.gameID === game) {
-        console.log("found game");
+        console.log('found game');
         statusCode = 200;
         break;
       }
-    }   
+    }
     // if all games scanned and not found
     if (statusCode == 0) {
       statusCode = 404;
@@ -142,7 +142,7 @@ const getGameMeta = (request, response, queryParams) => {
 const getGameStateMeta = (request, response) => {
   if (!queryParams.gameID) {
     statusCode = 400;
-      // find if game requested exists
+    // find if game requested exists
   } else if (findGame(queryParams.gameID)) {
     statusCode = 200;
   } else {
@@ -162,29 +162,29 @@ const notFoundMeta = (request, response) => {
 // or a randomly generated new one that is valid
 const createGame = (request, response, body) => {
   /// basic info of game - ID will be changed
-  let gameJSON = {
-    id: "0000",
+  const gameJSON = {
+    id: '0000',
     active: true,
     moveCount: 0,
-    gameState: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', "I", 
-    'J', "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U"]
+    gameState: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+      'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'],
   };
   errorJSON = {};
 
   body.gameID = body.gameID.toUpperCase();
 
-  // if valid 
+  // if valid
   if (body.gameID) {
     // check if length 4 / entirely letters
     if (body.gameID.length != 4 && !/[^A-Z]+$/.test(body.gameID)) {
-      errorJSON.message = "GameID is invalid - must be 4 letters.";
+      errorJSON.message = 'GameID is invalid - must be 4 letters.';
       errorJSON.id = 'invalidParams';
       statusCode = 400;
     } else if (findGame(body.gameID)) {
-      errorJSON.message = "Game already exists.";
+      errorJSON.message = 'Game already exists.';
       errorJSON.id = 'gameAlreadyExists';
-      statusCode = 409; //conflicts with current state since it would dup an ID
-    } else  {
+      statusCode = 409; // conflicts with current state since it would dup an ID
+    } else {
       // inputted id is valid -> send it
       gameJSON.id = body.gameID;
     }
@@ -202,9 +202,9 @@ const createGame = (request, response, body) => {
     gameIDs.push(gameJSON.id);
 
     responseJSON = {
-      message: "Game created successfully with ID " + gameJSON.id,
-      gameID: gameJSON.id
-    }
+      message: `Game created successfully with ID ${gameJSON.id}`,
+      gameID: gameJSON.id,
+    };
     respond(request, response, 201, responseJSON);
   }
 };
@@ -224,16 +224,16 @@ const sendMove = (request, response, body) => {
     // find if additional params are valid
     // player is either Red or Blue AND
     // space is between A / Z inclusive
-    if ((body.player === "Red" || body.player === "Blue") && 
-    body.space.charCodeAt(0) >= "A".charCodeAt(0) && 
-    body.space.charCodeAt(0) <= "Z".charCodeAt(0)) {
-      let game = games[body.gameID];
-      let player = body.player;
+    if ((body.player === 'Red' || body.player === 'Blue')
+    && body.space.charCodeAt(0) >= 'A'.charCodeAt(0)
+    && body.space.charCodeAt(0) <= 'Z'.charCodeAt(0)) {
+      const game = games[body.gameID];
+      const { player } = body;
       // check if game is still editable
       if (game.active) {
         // check if player CAN currently place a tile
-        if ((player === "Red" && game.moveCount % 2 == 0) || 
-        (player === "Blue" && game.moveCount % 2 == 1)) {
+        if ((player === 'Red' && game.moveCount % 2 == 0)
+        || (player === 'Blue' && game.moveCount % 2 == 1)) {
           // (0, 1 -> 1; 2, 3 -> 2;  4, 5 -> 3;... 18, 19 -> 10; 20 -> FINISH)
           const pieceValue = Math.floor(game.moveCount / 2) + 1;
           /*
@@ -246,16 +246,16 @@ const sendMove = (request, response, body) => {
           // player can't place a tile
           responseJSON = {
             message: "It is the other player's turn.",
-            id: 'otherPlayersTurn'
-          }
+            id: 'otherPlayersTurn',
+          };
           statusCode = 204;
         }
       } else {
         // game is already over
         responseJSON = {
-          message: "Game is already complete.",
-          id: 'completeGame'
-        }
+          message: 'Game is already complete.',
+          id: 'completeGame',
+        };
         statusCode = 204;
       }
     } else {
@@ -264,30 +264,30 @@ const sendMove = (request, response, body) => {
       already filled - either R/B and a number 1-10
       */
       if (body.space.length > 1 && body.space.length < 4
-        && (body.space[0] === "B" || body.space[0] === "R") &&
-        parseInt(body.space.slice(1)) > 0 && parseInt(body.space.slice(1)) < 11) {
-          responseJSON = {
-            message: 'Space has already been claimed.',
-            id: 'spaceAlreadyClaimed'
-          }
-          statusCode = 204;
-        } else {
-          responseJSON = {
-            message: 'At least one of player / space parameters are invalid.',
-            id: 'invalidParams'
-          }
-          statusCode = 400;
-        }
+        && (body.space[0] === 'B' || body.space[0] === 'R')
+        && parseInt(body.space.slice(1)) > 0 && parseInt(body.space.slice(1)) < 11) {
+        responseJSON = {
+          message: 'Space has already been claimed.',
+          id: 'spaceAlreadyClaimed',
+        };
+        statusCode = 204;
+      } else {
+        responseJSON = {
+          message: 'At least one of player / space parameters are invalid.',
+          id: 'invalidParams',
+        };
+        statusCode = 400;
+      }
     }
   } else {
     // if game doesn't exist, throw out 404
     responseJSON = {
       message: 'GameID is not one already stored in system.',
-      id: 'gameDoesNotExist'
-    }
+      id: 'gameDoesNotExist',
+    };
     statusCode = 404;
   }
-  
+
   // valid game
   if (errorJSON !== {}) {
     respond(request, response, statusCode, errorJSON);
@@ -306,27 +306,27 @@ const findGame = (gameID) => {
   }
 
   return gameExists;
-}
+};
 
-// helper function - creates unique ID / scans 
+// helper function - creates unique ID / scans
 const createNewGameID = () => {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   let newGameID;
   let notUnique = true;
 
   // while id is not unique
   while (notUnique) {
-    newGameID = "";
+    newGameID = '';
     for (let i = 0; i < 4; i++) {
       // generate 4-digit code
       newGameID += characters[Math.floor(Math.random() * characters.length)];
     }
     // see if unique ID to break out of loop
     notUnique = !findGame(newGameID);
-    }
+  }
   // if unique, return it
   return newGameID;
-}
+};
 
 module.exports = {
   getGame,

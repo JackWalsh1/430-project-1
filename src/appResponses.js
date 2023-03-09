@@ -32,7 +32,7 @@ const getCSS = (request, response) => {
 
 // Serve the bundle.js file
 const getBundle = (request, response) => {
-  console.log("grabbing bundle");
+  console.log('grabbing bundle');
   response.writeHead(200, { 'Content-Type': 'application/javascript' });
   response.write(bundle);
   response.end();
@@ -43,5 +43,5 @@ module.exports = {
   getGamePage,
   getDocumentation,
   getCSS,
-  getBundle
+  getBundle,
 };
