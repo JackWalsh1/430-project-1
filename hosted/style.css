@@ -7,10 +7,6 @@
     user-select: none;
 }
 
-#gameContainer {
-    visibility: hidden;
-}
-
 /* mass set to pointer style */
 .gameSelectButton, #backButton, #helpButton, #closeButton, .blackHoleSpace, #enterButton {
     cursor: pointer;

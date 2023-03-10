@@ -75,8 +75,11 @@ export function closePopUp() {
   document.querySelector('#popUpContainer').remove();
 }
 
-// open option pop up
+// open option pop up with relevant info for player
 export function optionPopUp(game) {
+  console.log(game);
+  let moveCount = game.moveCount;
+  console.log(moveCount);
   // disable all content outside pop up
   document.body.querySelector('#gameContainer').classList.add('isDisabled');
 
@@ -91,59 +94,22 @@ export function optionPopUp(game) {
   const options = document.createElement('div');
   options.setAttribute('id', 'options');
 
-  const player1Name = document.createElement('div');
-  player1Name.setAttribute('id', 'player1NameContainer');
+  const playerName = document.createElement('div');
+  playerName.setAttribute('id', 'player1NameContainer');
 
-  const player1NameInput = document.createElement('input');
-  player1NameInput.setAttribute('id', 'player1NameInput');
-  player1NameInput.setAttribute('class', 'nameInput');
-  player1NameInput.setAttribute('type', 'text');
-  player1NameInput.setAttribute('maxlength', '8');
+  const playerNameInput = document.createElement('input');
+  playerNameInput.setAttribute('id', `player${moveCount + 1}NameInput`);
+  playerNameInput.setAttribute('class', 'nameInput');
+  playerNameInput.setAttribute('type', 'text');
+  playerNameInput.setAttribute('maxlength', '8');
 
-  const player1NameLabel = document.createElement('label');
-  player1NameInput.setAttribute('class', 'label');
-  player1NameLabel.htmlFor = 'player1NameInput';
-  player1NameLabel.innerHTML = 'Player 1 Name: ';
+  const playerNameLabel = document.createElement('label');
+  playerNameInput.setAttribute('class', 'label');
+  playerNameLabel.htmlFor = `player${moveCount + 1}NameInput`;
+  playerNameLabel.innerHTML = `Player ${moveCount + 1} Name: `;
 
-  player1Name.append(player1NameLabel, player1NameInput);
-
-  // set up switch for player 2
-  const player2SwitchContainer = document.createElement('label');
-  player2SwitchContainer.setAttribute('id', 'player2SwitchContainer');
-  player2SwitchContainer.setAttribute('class', 'switch');
-
-  const player2Switch = document.createElement('input');
-  player2Switch.setAttribute('id', 'switchContainer');
-  player2Switch.setAttribute('type', 'checkbox');
-  player2Switch.setAttribute('onchange', "toggleDiv('#player2NameContainer')");
-  const player2SwitchSpan = document.createElement('span');
-  player2SwitchSpan.setAttribute('class', 'slider round');
-
-  const player2SwitchLabel = document.createElement('label');
-  player2SwitchLabel.setAttribute('class', 'label');
-  player2SwitchLabel.htmlFor = 'player2SwitchContainer';
-  player2SwitchLabel.innerHTML = '2 Player?: ';
-
-  player2SwitchContainer.append(player2Switch, player2SwitchSpan);
-
-  const player2NameContainer = document.createElement('div');
-  player2NameContainer.setAttribute('id', 'player2NameContainer');
-  player2NameContainer.style.display = 'none';
-
-  const player2NameInput = document.createElement('input');
-  player2NameInput.setAttribute('id', 'player2NameInput');
-  player2NameInput.setAttribute('class', 'nameInput');
-  player2NameInput.setAttribute('type', 'text');
-  player2NameInput.setAttribute('maxlength', '8');
-
-  const player2NameLabel = document.createElement('label');
-  player2NameInput.setAttribute('class', 'label');
-  player2NameLabel.htmlFor = 'player2NameInput';
-  player2NameLabel.innerHTML = 'Player 2 Name: ';
-
-  player2NameContainer.append(player2NameLabel, player2NameInput);
-
-  options.append(player1Name, player2SwitchLabel, player2SwitchContainer, player2NameContainer);
+  playerName.append(playerNameLabel, playerNameInput);
+  options.append(playerName);
 
   const enterButton = new Button(
     'enterButton',
@@ -152,7 +118,7 @@ export function optionPopUp(game) {
     '50px',
     'gray',
     'Start Game',
-    `setSettings('${game}')`,
+    `utils.setSettings('${game}', true)`,
   );
 
   popUpContainer.append(options, enterButton.createButton());
@@ -160,29 +126,20 @@ export function optionPopUp(game) {
 }
 
 // push settings to main game
-export function setSettings(game) {
-  let aiWanted;
-  if (document.querySelector('#player1NameInput').value == '') {
-    document.querySelector('#player1Name').innerHTML = 'Player 1';
-  } else {
-    document.querySelector('#player1Name').innerHTML = document.querySelector('#player1NameInput').value;
+export function setSettings(game, fromOptionsMenu) {
+
+  // if value just set
+  if (fromOptionsMenu) {
+    let name = document.querySelector('#playerNameInput').value;
+    // if name space was blank, set as Player X - otherwise, use name
+    game.playerNames[game.moveCount] = name === '' ? `Player ${game.moveCount + 1}` : name;
   }
 
-  if (document.querySelector('#player2NameContainer').style.display == 'none') {
-    aiWanted = true;
-    document.querySelector('#player2Name').innerHTML = 'AI';
-  } else {
-    aiWanted = false;
-    if (document.querySelector('#player2NameInput').value == '') {
-      document.querySelector('#player2Name').innerHTML = 'Player 2';
-    } else {
-      document.querySelector('#player2Name').innerHTML = document.querySelector('#player2NameInput').value;
-    }
-  }
+  document.body.querySelector("#player1Name").innerHTML = game.playerNames[0];
+  // if player 2 isn't 8 question marks, have it show waiting - else, display name
+  document.body.querySelector("#player2Name").innerHTML = game.playerNames[1] === '????????' ? "P2ToJoin" : game.playerNames[1];
 
-  document.body.querySelector('#gameStatus').innerHTML = `${document.body.querySelector('#player1Name').innerHTML}, place your 1 piece.`;
-
-  aiPlaying = aiWanted;
+  document.body.querySelector('#gameStatus').innerHTML = `${game.playerNames[game.moveCount]}, place your 1 piece.`;
 
   document.body.querySelector('#gameContainer').classList.remove('isDisabled');
 
@@ -190,14 +147,7 @@ export function setSettings(game) {
   document.querySelector('#popUpContainer').remove();
 }
 
-// toggles div
-export function toggleDiv(divID) {
-  if (document.querySelector(divID).style.display == 'none') {
-    document.querySelector(divID).style.display = '';
-  } else {
-    document.querySelector(divID).style.display = 'none';
-  }
-}
+
 
 // delays function by delay in milliseconds
 export function delay(delayInms) {
@@ -209,7 +159,7 @@ export function delay(delayInms) {
 }
 
 // reset div of games
-export function resetGame() {
+export function resetGame(gameContainer) {
   // reset HTML
   gameContainer.innerHTML = '';
   gameContainer.className = '';
@@ -219,16 +169,16 @@ export function resetGame() {
 }
 
 export function flipScreens() {
-  let homeScreen = document.querySelector("#homeScreen");
-  let gameContainer = document.querySelector("#gameContainer");
+  toggleDiv("#homeScreen");
+  toggleDiv("#gameContainer");
+}
 
-  // flip the two screen's visibility
-  if (homeScreen.classList.contains("hidden")) {
-    homeScreen.classList.replace("hidden", "visible");
-    gameContainer.classList.replace("visible", "hidden");
+// toggles div
+export function toggleDiv(divID) {
+  if (document.querySelector(divID).style.display == 'none') {
+    document.querySelector(divID).style.display = '';
   } else {
-    homeScreen.classList.replace("visible", "hidden");
-    gameContainer.classList.replace("hidden", "visible");
+    document.querySelector(divID).style.display = 'none';
   }
 }
 

@@ -15,6 +15,7 @@ game {
     id: random 4-letter string (ala Jackbox)
     active: bool
     moveCount: int between 0 - 20
+    playerNames: [player1Name, player2Name]
     gameState: {
         (list of pos A -> pos U, filled with R# or B# depending on owner if exists)
     }
@@ -166,6 +167,7 @@ const createGame = (request, response, body) => {
     id: '0000',
     active: true,
     moveCount: 0,
+    playerNames: ["????????", "????????"],
     gameState: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
       'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'],
   };

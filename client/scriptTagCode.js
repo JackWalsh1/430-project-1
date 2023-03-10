@@ -94,6 +94,8 @@ const init = () => {
 	joinGameForm.addEventListener('submit', joinGameFormAction);
 	createGameForm.addEventListener('submit', createGameFormAction);
 
+	document.querySelector("#gameContainer").style.display = "none";
+
 	const h1 = document.querySelector("#h1");
 
 	h1.innerHTML = "script tag worked!";

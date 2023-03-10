@@ -3,7 +3,7 @@ import {Button} from "./buttonClass.js";
 
 // global containers needed
 let textNode;
-const gameContainer = document.querySelector("#gameContainer");
+let gameContainer = document.querySelector("#gameContainer");
 
 // global variables for games
 let currentPlayer;
@@ -17,9 +17,11 @@ let blackHoleBoardArray;
 
 // load general structure for black hole
 export const blackHoleLoad = async (gameID) => {
+  gameContainer = document.querySelector("#gameContainer");
+
   // reset game
   utils.flipScreens();
-  utils.resetGame();
+  utils.resetGame(gameContainer);
   utils.createHeader('blackHole');
 
   // get gamestate
@@ -177,11 +179,23 @@ export const blackHoleLoad = async (gameID) => {
   gameStatus.append(textNode);
   gameContainer.append(gameStatus);
 
-  optionPopUp('blackHole');
+  console.log(round);
+
+  // sends to individual option screen
+  if (round == 1) {
+    utils.optionPopUp(game);
+  }
+
+  // go to game loop
+  gameLoop();
 };
 
 function createTiles(player, round) {
   return;
+}
+
+function gameLoop() {
+
 }
 
 // decide what piece was selected, add them to player list, and then swap player / round
