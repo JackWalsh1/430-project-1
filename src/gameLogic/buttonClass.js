@@ -1,14 +1,14 @@
 // creates button
 // functionName = function that button calls when pressed
 export class Button {
-  constructor(idName, className, width, height, backgroundColor, text, functionName) {
+  constructor(idName, className, width, height, backgroundColor, text, onclick) {
     this.idName = idName;
     this.className = className;
     this.width = width;
     this.height = height;
     this.backgroundColor = backgroundColor;
     this.text = text;
-    this.functionName = functionName;
+    this.onclick = onclick;
     this.div = '';
   }
 
@@ -26,8 +26,10 @@ export class Button {
       if (this.className) {
         button.setAttribute('class', this.className);
       }
-      if (this.functionName) {
-        button.setAttribute('onclick', this.functionName);
+      if (this.onclick) {
+        button.addEventListener('click', evt => {
+          this.onclick(evt);
+        })
       }
 
       // set dimensions / color

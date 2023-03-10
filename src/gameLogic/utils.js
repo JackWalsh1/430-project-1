@@ -20,7 +20,7 @@ export function loadHelpBox(game) {
     '50px',
     '',
     'X',
-    'closePopUp()',
+    closePopUp,
   );
 
   closeButton.createButton();
@@ -66,20 +66,18 @@ export function loadHelpBox(game) {
 }
 
 // close popup
-export function closePopUp() {
+export const closePopUp = () => {
   // enable container
   document.body.querySelector('#gameContainer').classList.remove('isDisabled');
 
   // delete popup / backDim
   document.querySelector('#backDim').remove();
   document.querySelector('#popUpContainer').remove();
-}
+};
 
 // open option pop up with relevant info for player
 export function optionPopUp(game) {
-  console.log(game);
   let moveCount = game.moveCount;
-  console.log(moveCount);
   // disable all content outside pop up
   document.body.querySelector('#gameContainer').classList.add('isDisabled');
 
@@ -98,7 +96,7 @@ export function optionPopUp(game) {
   playerName.setAttribute('id', 'player1NameContainer');
 
   const playerNameInput = document.createElement('input');
-  playerNameInput.setAttribute('id', `player${moveCount + 1}NameInput`);
+  playerNameInput.setAttribute('id', `playerNameInput`);
   playerNameInput.setAttribute('class', 'nameInput');
   playerNameInput.setAttribute('type', 'text');
   playerNameInput.setAttribute('maxlength', '8');
@@ -118,7 +116,7 @@ export function optionPopUp(game) {
     '50px',
     'gray',
     'Start Game',
-    `utils.setSettings('${game}', true)`,
+    (evt) => setSettings(game, true)
   );
 
   popUpContainer.append(options, enterButton.createButton());
@@ -126,8 +124,8 @@ export function optionPopUp(game) {
 }
 
 // push settings to main game
-export function setSettings(game, fromOptionsMenu) {
-
+export const setSettings = (game, fromOptionsMenu) => {
+  console.log("set settings");
   // if value just set
   if (fromOptionsMenu) {
     let name = document.querySelector('#playerNameInput').value;

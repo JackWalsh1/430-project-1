@@ -138,7 +138,7 @@ export const blackHoleLoad = async (gameID) => {
       '88px',
       'gray',
       String.fromCharCode(65 + i),
-      `placePiece('${String.fromCharCode(65 + i)}')`,
+      (evt) => placePiece(String.fromCharCode(65 + i)),
     );
 
     blackHoleSpace.createButton();
@@ -194,12 +194,16 @@ function createTiles(player, round) {
   return;
 }
 
-function gameLoop() {
-
+async function gameLoop() {
+  const res = await fetch('/query server');
+  if (res !== game)
+  // set variables
+  await delay(2000);
+  gameLoop();
 }
 
 // decide what piece was selected, add them to player list, and then swap player / round
-function placePiece(letter) {
+const placePiece = (letter) => {
   // find piece that was clicked
   const spaceToAdjust = document.body.querySelector(`#blackHoleSpace${letter}`);
 
