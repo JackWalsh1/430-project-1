@@ -16,7 +16,7 @@ let player2Tiles = [];
 let blackHoleBoardArray;
 
 // load general structure for black hole
-export const blackHoleLoad = async (gameID) => {
+export const blackHoleLoad = async (gameID, activePlayer) => {
   gameContainer = document.querySelector("#gameContainer");
 
   // reset game
@@ -78,7 +78,7 @@ export const blackHoleLoad = async (gameID) => {
       '88px',
       'gray',
       String.fromCharCode(65 + i),
-      (evt) => placePiece(String.fromCharCode(65 + i), gameID),
+      (evt) => placePiece(String.fromCharCode(65 + i), gameID, activePlayer),
     );
 
     blackHoleSpace.createButton();
@@ -96,17 +96,13 @@ export const blackHoleLoad = async (gameID) => {
   blackHoleRows.forEach(row => blackHoleBoard.append(row));
   gameContainer.append(blackHoleBoard);
 
-  console.log(round);
-  console.log(game);
-
   // sends to individual option screen
   if (round == 1) {
-    utils.optionPopUp(game);
-
+    utils.optionPopUp(game, activePlayer);
   }
 
   // go to game loop
-  gameLoop(game);
+  gameLoop(game, activePlayer);
 };
 
 function createPlayerColumn(player, round) {
@@ -165,10 +161,77 @@ async function getGameState(gameID){
   return json.game;
 }
 
-async function updateGameState(gameID, updatedGameData){
-  const formData = `gameID=${gameID.value}&player=${player.value}&space=${space.value}`; 
+async function gameLoop(game, activePlayer) {
+  const currentState = await getGameState(game.id);
+  // opponent has made a move
+  if (currentState.moveCount !== game.moveCount) {
+    console.log("change in game state");
+    console.log(currentState);
+    game = updateGameState(currentState, activePlayer);
+  }
+  // set a delay, then check again
+  await utils.delay(2000);
+  gameLoop(game);
+}
 
-	let response = await fetch(`/sendMove`, {
+const updateGameState = (currentState, activePlayer) => {
+  // check for needed updates for all spaces
+  for (let i = 0; i < 21; i++) {
+    let spaceToAdjust = document.querySelector(`#blackHoleSpace${String.fromCharCode(65 + i)}`);
+    // check if game piece needs to be colored in
+    if (spaceToAdjust.style.backgroundColor === "gray" && 
+     currentState.gameState[i] !== `${String.fromCharCode(65 + i).toUpperCase()}`) {
+      console.log(`difference on tile ${String.fromCharCode(65 + i)}`);
+      let color = currentState.gameState[i].substring(0, 1);
+      let number = currentState.gameState[i].substring(1);
+      let round = Math.floor(currentState.moveCount / 2) + 1;
+
+      // update button
+      spaceToAdjust.style.backgroundColor = color === 'R' ? '#FF0000' : '#0000FF';
+      spaceToAdjust.innerHTML = number;
+      spaceToAdjust.classList.add('isDisabled');
+
+      document.body.querySelector(`#player${color === 'R' ? 1 : 2}Piece${round}`).remove();
+      remainingTiles.splice(remainingTiles.findIndex((tile) => tile.idName == `blackHoleSpace${String.fromCharCode(65 + i)}`), 1);
+     }
+  }
+
+  if (currentState.moveCount === 20) {
+    calculateWinner();
+  } else {
+    let nextMove = currentState.moveCount % 2 === 0 ? "Red" : "Blue";
+    let statusMessage = '';
+    if (nextMove === activePlayer) {
+      // say "it's your turn"
+      console.log("not active player");
+      statusMessage = `${currentState.playerNames[currentState.moveCount % 2]}, place your ${round} piece.`;
+    } else {
+      // get other player's name and say it's their turn
+      console.log("active player");
+      let playerToGo = currentState.playerNames[nextMove === "Red" ? 0 : 1];
+      if (playerToGo === "????????") {
+        playerToGo = "second player to join and"
+      } else {
+        playerToGo += " to";
+      }
+      statusMessage = `Waiting on ${playerToGo} place their ${round} piece.`;   
+    }
+    console.log("gets to bottom of if");
+    document.body.querySelector('#gameStatus').innerHTML = statusMessage;
+  }
+
+  console.log(currentState);
+
+  return currentState;
+}
+
+// decide what piece was selected, add them to player list, and then swap player / round
+// auto-fires updateGameState
+const placePiece = async (letter, gameID, activePlayer) => {
+
+  const formData = `gameID=${gameID}&player=${activePlayer}&space=${letter}`; 
+
+	let response = await fetch("/sendMove", {
 		method: "POST",
 		headers: {
 		'Content-Type': 'application/x-www-form-urlencoded',
@@ -176,83 +239,17 @@ async function updateGameState(gameID, updatedGameData){
 		},
 		body: formData,
 	});
-}
 
-async function gameLoop(game) {
-  const currentState = getGameState(game.id);
-  // opponent has made a move
-  if (currentState.moveCount !== game.moveCount) {
-    //update game
+  // piece updated
+  if (response.status === 201) {
+    const currentState = await getGameState(gameID);
+    updateGameState(currentState, activePlayer);
+  } else { //player has tried to make illegal move
+    let gameStatus = document.body.querySelector('#gameStatus');
+    let tempStorage = document.body.querySelector('#gameStatus').innerHTML;
+    document.body.querySelector('#gameStatus').innerHTML = `It is not your turn. Please wait for
+    the other player to go. \n${tempStorage}`;
   }
-  // set a delay, then check again
-  await utils.delay(2000);
-  gameLoop(game);
-}
-
-// decide what piece was selected, add them to player list, and then swap player / round
-const placePiece = async (letter, gameID) => {
-
-  const game = await getGameState(gameID);
-
-  console.log(game);
-
-  // find piece that was clicked
-  const spaceToAdjust = document.body.querySelector(`#blackHoleSpace${letter}`);
-
-  // set player color to show who placed it / log it for future scoring
-  if (currentPlayer == 1) {
-    spaceToAdjust.style.backgroundColor = '#FF0000';
-    player1Tiles.push(spaceToAdjust);
-    document.body.querySelector(`#player1Piece${round}`).remove();
-  } else {
-    spaceToAdjust.style.backgroundColor = '#0000FF';
-    player2Tiles.push(spaceToAdjust);
-    document.body.querySelector(`#player2Piece${round}`).remove();
-  }
-  // disable future interactions
-  spaceToAdjust.classList.add('isDisabled');
-
-  // remove tile from remaining tiles
-  remainingTiles.splice(remainingTiles.findIndex((tile) => tile.idName == `blackHoleSpace${letter}`), 1);
-
-  // set up needed initialization variables
-  spaceToAdjust.innerHTML = round;
-
-  // flip player control / iterate to next round if needed
-  // round can be used to track what piece need to be used
-  if (currentPlayer == 1) {
-    currentPlayer++;
-    // jump to ai "move" if needed
-    if (aiPlaying) {
-      document.body.querySelector('#gameStatus').innerHTML = 'AI is thinking...';
-      aiBlackHoleMove();
-    } else {
-      document.body.querySelector('#gameStatus').innerHTML = document.body.querySelector('#player2Name').innerHTML;
-      document.body.querySelector('#gameStatus').innerHTML += `, place your ${round} piece.`;
-    }
-  } else if (round == 10) {
-    // if player 2 + round 10, game over.
-    calculateWinner();
-  } else {
-    // start next round and player 1's turn
-    currentPlayer = 1;
-    round++;
-    document.body.querySelector('#gameStatus').innerHTML = document.body.querySelector('#player1Name').innerHTML;
-    document.body.querySelector('#gameStatus').innerHTML += `, place your ${round} piece.`;
-  }
-}
-
-// grabs a random value from the remaining value, delays to simulate thinking,
-// and then chooses that piece
-async function aiBlackHoleMove() {
-  document.body.querySelector('#blackHoleBoard').classList.add('isDisabled');
-  let randomTile = Math.round(Math.random() * remainingTiles.length);
-  if (randomTile == remainingTiles.length) { randomTile = 0; }
-  randomTile = remainingTiles[randomTile];
-  randomTile = randomTile.idName.charAt(randomTile.idName.length - 1);
-  const delayres = await delay(1000);
-  document.body.querySelector('#blackHoleBoard').classList.remove('isDisabled');
-  placePiece(randomTile.toUpperCase());
 }
 
 // calculate winner of Black Hole

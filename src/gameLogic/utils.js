@@ -76,7 +76,7 @@ export const closePopUp = () => {
 };
 
 // open option pop up with relevant info for player
-export function optionPopUp(game) {
+export function optionPopUp(game, activePlayer) {
   let moveCount = game.moveCount;
   // disable all content outside pop up
   document.body.querySelector('#gameContainer').classList.add('isDisabled');
@@ -116,7 +116,7 @@ export function optionPopUp(game) {
     '50px',
     'gray',
     'Start Game',
-    (evt) => setSettings(game, true)
+    (evt) => setSettings(game, true, activePlayer)
   );
 
   popUpContainer.append(options, enterButton.createButton());
@@ -124,7 +124,7 @@ export function optionPopUp(game) {
 }
 
 // push settings to main game
-export const setSettings = (game, fromOptionsMenu) => {
+export const setSettings = async (game, fromOptionsMenu, activePlayer) => {
   console.log("set settings");
   // if value just set
   if (fromOptionsMenu) {
@@ -143,6 +143,24 @@ export const setSettings = (game, fromOptionsMenu) => {
 
   document.querySelector('#backDim').remove();
   document.querySelector('#popUpContainer').remove();
+
+  console.log(game);
+
+  let player = activePlayer;
+  let name = document.querySelector(activePlayer === "Red" ? "#player1Name" : "#player2Name").innerHTML;
+  let body = `gameID=${game.id}&player=${player}&name=${name}`;
+
+  console.log(body);
+  let response = await fetch("/sendPlayerName", {
+    method: "POST",
+    headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+    },
+    body: body,
+  });
+
+  console.log(await response.json());
 }
 
 
@@ -194,7 +212,8 @@ export function createHeader(game) {
     '60px',
     '',
     '←',
-    (evt) => flipScreens(),
+    // reset back to the original home screen
+    (evt) => {flipScreens(); document.querySelector("#gameStatus").innerHTML = "Create an existing game using 4 letters OR join one that already exists!";},
   );
 
   const helpButton = new Button(
