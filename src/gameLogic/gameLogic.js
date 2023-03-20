@@ -25,15 +25,9 @@ export const blackHoleLoad = async (gameID) => {
   utils.createHeader('blackHole');
 
   // get gamestate
-  const response = await fetch(`/getGameState?gameID=${gameID}`, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-    },
-  });
+  const game = await getGameState(gameID);
 
-  const responseJSON = await response.json();
-  const game = responseJSON.game;
+  console.log(game);
 
   // set game variables
   round = Math.floor(game.moveCount / 2) + 1;
@@ -44,79 +38,22 @@ export const blackHoleLoad = async (gameID) => {
   player1Tiles = [];
   player2Tiles = [];
 
-  // create player 1 pieces / container
-  const player1Pieces = document.createElement('div');
-  player1Pieces.setAttribute('id', 'player1Pieces');
-  player1Pieces.setAttribute('class', 'playerPieces');
-
-  const player1Name = document.createElement('p');
-  player1Name.setAttribute('id', 'player1Name');
-  player1Name.setAttribute('class', 'playerName');
-  player1Name.innerHTML = 'Player';
-  player1Pieces.appendChild(player1Name);
-
-  // only create as many pieces as physically available
-  for (let i = round; i < 11; i++) {
-    // create space
-    const playerPiece = new Button(
-      `player1Piece${i}`,
-      'playerPiece player1Piece',
-      '65px',
-      '65px',
-      '#FF0000',
-      i,
-      '',
-    );
-
-    player1Pieces.appendChild(playerPiece.createButton());
-  }
-
-  // create player 2 pieces / container
-  const player2Pieces = document.createElement('div');
-  player2Pieces.setAttribute('id', 'player2Pieces');
-  player2Pieces.setAttribute('class', 'playerPieces');
-
-  const player2Name = document.createElement('p');
-  player2Name.setAttribute('id', 'player2Name');
-  player2Name.setAttribute('class', 'playerName');
-  player2Name.innerHTML = 'Player';
-  player2Pieces.appendChild(player2Name);
-
-  for (let i = 1; i < 11; i++) {
-    // create space
-    const playerPiece = new Button(
-      `player2Piece${i}`,
-      'playerPiece player2Piece',
-      '65px',
-      '65px',
-      '#0000FF',
-      i,
-      '',
-    );
-
-    player2Pieces.appendChild(playerPiece.createButton());
-  }
-
-  // append containers
-  gameContainer.append(player1Pieces, player2Pieces);
+  // create player columns / append them
+  const player1Column = createPlayerColumn("red", round);
+  const player2Column = createPlayerColumn("blue", round);
+  gameContainer.append(player1Column, player2Column);
 
   // create game board div
   const blackHoleBoard = document.createElement('div');
   blackHoleBoard.setAttribute('id', 'blackHoleBoard');
 
-  // create rows of game board
-  const blackHoleRow1 = document.createElement('div');
-  blackHoleRow1.setAttribute('class', 'blackHoleRow');
-  const blackHoleRow2 = document.createElement('div');
-  blackHoleRow2.setAttribute('class', 'blackHoleRow');
-  const blackHoleRow3 = document.createElement('div');
-  blackHoleRow3.setAttribute('class', 'blackHoleRow');
-  const blackHoleRow4 = document.createElement('div');
-  blackHoleRow4.setAttribute('class', 'blackHoleRow');
-  const blackHoleRow5 = document.createElement('div');
-  blackHoleRow5.setAttribute('class', 'blackHoleRow');
-  const blackHoleRow6 = document.createElement('div');
-  blackHoleRow6.setAttribute('class', 'blackHoleRow');
+  let blackHoleRows = []; 
+
+  for (let i = 0; i < 6; i++) {
+    let blackHoleRow = document.createElement('div');
+    blackHoleRow.setAttribute('class', 'blackHoleRow');
+    blackHoleRows.push(blackHoleRow);
+  }
 
   // reset black hole storage array
   blackHoleBoardArray = [
@@ -128,6 +65,9 @@ export const blackHoleLoad = async (gameID) => {
     [],
   ];
 
+  let rowToInsert = 0;
+  // when value of i hits these marks, insert into next row
+  const rowJumps = [6, 11, 15, 18, 20];
   // for each space
   for (let i = 0; i < 21; i++) {
     // create space
@@ -138,72 +78,124 @@ export const blackHoleLoad = async (gameID) => {
       '88px',
       'gray',
       String.fromCharCode(65 + i),
-      (evt) => placePiece(String.fromCharCode(65 + i)),
+      (evt) => placePiece(String.fromCharCode(65 + i), gameID),
     );
 
     blackHoleSpace.createButton();
 
-    // sort into pyramid structure
-    if (blackHoleBoardArray[0].length < 6) {
-      blackHoleBoardArray[0].push(blackHoleSpace.div);
-      blackHoleRow1.appendChild(blackHoleSpace.div);
-    } else if (blackHoleBoardArray[1].length < 5) {
-      blackHoleBoardArray[1].push(blackHoleSpace.div);
-      blackHoleRow2.appendChild(blackHoleSpace.div);
-    } else if (blackHoleBoardArray[2].length < 4) {
-      blackHoleBoardArray[2].push(blackHoleSpace.div);
-      blackHoleRow3.appendChild(blackHoleSpace.div);
-    } else if (blackHoleBoardArray[3].length < 3) {
-      blackHoleBoardArray[3].push(blackHoleSpace.div);
-      blackHoleRow4.appendChild(blackHoleSpace.div);
-    } else if (blackHoleBoardArray[4].length < 2) {
-      blackHoleBoardArray[4].push(blackHoleSpace.div);
-      blackHoleRow5.appendChild(blackHoleSpace.div);
-    } else {
-      blackHoleBoardArray[5].push(blackHoleSpace.div);
-      blackHoleRow6.appendChild(blackHoleSpace.div);
-    }
+    // check if previous row full and i need to jump
+    rowToInsert += rowJumps.indexOf(i) != -1 ? 1 : 0; 
+    blackHoleBoardArray[rowToInsert].push(blackHoleSpace.div);
+    blackHoleRows[rowToInsert].appendChild(blackHoleSpace.div);
 
     // push to track remaining tiles
     remainingTiles.push(blackHoleSpace);
   }
 
   // append all elements to blackholeBoard + add it to container
-  blackHoleBoard.append(blackHoleRow1, blackHoleRow2, blackHoleRow3, blackHoleRow4, blackHoleRow5, blackHoleRow6);
+  blackHoleRows.forEach(row => blackHoleBoard.append(row));
   gameContainer.append(blackHoleBoard);
 
-  // create game status / append it
-  const gameStatus = document.createElement('div');
-  gameStatus.setAttribute('id', 'gameStatus');
-  textNode = document.createTextNode('Starting up...');
-  gameStatus.append(textNode);
-  gameContainer.append(gameStatus);
-
   console.log(round);
+  console.log(game);
 
   // sends to individual option screen
   if (round == 1) {
     utils.optionPopUp(game);
+
   }
 
   // go to game loop
-  gameLoop();
+  gameLoop(game);
 };
 
-function createTiles(player, round) {
-  return;
+function createPlayerColumn(player, round) {
+
+  const redPlayer = {
+    playerNum: 1,
+    color: "#FF0000"
+  }
+
+  const bluePlayer = {
+    playerNum: 2,
+    color: "#0000FF"
+  }
+
+  let piecesRequested = player === "red" ? redPlayer : bluePlayer;
+
+  // create player pieces / container
+  const playerColumn = document.createElement('div');
+  playerColumn.setAttribute('id', `player${piecesRequested.playerNum}Pieces`);
+  playerColumn.setAttribute('class', 'playerColumn');
+  
+  const playerName = document.createElement('p');
+  playerName.setAttribute('id', `player${piecesRequested.playerNum}Name`);
+  playerName.setAttribute('class', 'playerName');
+  playerName.innerHTML = 'Player';
+  playerColumn.appendChild(playerName);
+  
+    // only create as many pieces as physically available
+  for (let i = round; i < 11; i++) {
+      // create space
+      const numTile = new Button(
+        `player${piecesRequested.playerNum}Piece${i}`,
+        `playerPiece player${piecesRequested.playerNum}Piece`,
+        '65px',
+        '65px',
+        piecesRequested.color,
+        i,
+        '',
+      );
+  
+      playerColumn.appendChild(numTile.createButton());
+    }
+  return playerColumn;
 }
 
-async function gameLoop() {
-  const res = await fetch('/query server');
-  if (res !== game)
-  // set variables
-  await delay(2000);
-  gameLoop();
+// gets current game state and returns game obj from json
+async function getGameState(gameID){
+  const response = await fetch(`/getGameState?gameID=${gameID}`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  const json = await response.json();
+  return json.game;
+}
+
+async function updateGameState(gameID, updatedGameData){
+  const formData = `gameID=${gameID.value}&player=${player.value}&space=${space.value}`; 
+
+	let response = await fetch(`/sendMove`, {
+		method: "POST",
+		headers: {
+		'Content-Type': 'application/x-www-form-urlencoded',
+		'Accept': 'application/json',
+		},
+		body: formData,
+	});
+}
+
+async function gameLoop(game) {
+  const currentState = getGameState(game.id);
+  // opponent has made a move
+  if (currentState.moveCount !== game.moveCount) {
+    //update game
+  }
+  // set a delay, then check again
+  await utils.delay(2000);
+  gameLoop(game);
 }
 
 // decide what piece was selected, add them to player list, and then swap player / round
-const placePiece = (letter) => {
+const placePiece = async (letter, gameID) => {
+
+  const game = await getGameState(gameID);
+
+  console.log(game);
+
   // find piece that was clicked
   const spaceToAdjust = document.body.querySelector(`#blackHoleSpace${letter}`);
 

@@ -16,47 +16,46 @@
 <webcpt-navbar data-current-page="app" class="is-centered"></webcpt-navbar>
 
 <div id="appContainer" class="container">
-    <div id="homeScreen">
-        <webcpt-title data-text="Black Hole"></webcpt-title>
-    
-        <div class="box mt-5 has-text-centered">
-            <h3 class="subtitle">Join Existing Game</h3>
-            <form id="joinGameForm" method="get">
-                <div class="field is-grouped is-grouped-centered">
-                    <label class="label" for="gameID">GameID</label>
-                    <div class = "control">
-                        <input id="gameIDField" type="text" name="gameID" placeholder="4-Letter Game ID"/>
+    <div id="appDisplay">
+        <div id="homeScreen">
+            <webcpt-title data-text="Black Hole"></webcpt-title>
+        
+            <div class="box mt-5 has-text-centered">
+                <h3 class="subtitle">Join Existing Game</h3>
+                <form id="joinGameForm" method="get">
+                    <div class="field is-grouped is-grouped-centered">
+                        <label class="label" for="gameID">GameID</label>
+                        <div class = "control">
+                            <input id="gameIDField" type="text" name="gameID" placeholder="4-Letter Game ID"/>
+                        </div>
+                        <div class = "control">
+                            <input type="submit" value="Join Game"/>
+                        </div>
                     </div>
-                    <div class = "control">
-                        <input type="submit" value="Join Game"/>
+                </form>
+            </div>
+        
+            <div class="box mt-5 has-text-centered">
+                <h3 class="subtitle">Create New Game</h3>
+                <form id="createGameForm" method="post" class="container">
+                    <div class="field is-grouped is-grouped-centered">
+                        <label class="label" for="gameID">GameID (optional)</label>
+                        <div class="control">
+                            <input id="gameIDField" type="text" name="gameID" placeholder="4-Letter Game ID"/>
+                        </div>
+                        <div class = "control">
+                            <input type="submit" value="Create New Game"/>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-    
-        <div class="box mt-5 has-text-centered">
-            <h3 class="subtitle">Create New Game</h3>
-            <form id="createGameForm" method="post" class="container">
-                <div class="field is-grouped is-grouped-centered">
-                    <label class="label" for="gameID">GameID (optional)</label>
-                    <div class="control">
-                        <input id="gameIDField" type="text" name="gameID" placeholder="4-Letter Game ID"/>
-                    </div>
-                    <div class = "control">
-                        <input type="submit" value="Create New Game"/>
-                    </div>
-                </div>
-            </form>
-        </div>
-    
-          <div id="result">
-            <h1 id="h1">No return yet...</h1>
-            <p id="p"></p>
-          </div>
+        
+        <div id="gameContainer" class="container"></div>   
     </div>
-    
-    <div id="gameContainer" class="container"> 
-
+  
+    <div id="gameStatus" class="container">
+        Starting up...
     </div>
 </div>
 

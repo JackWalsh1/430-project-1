@@ -1,11 +1,24 @@
 #appContainer {
+    display: grid;
+    grid-template-columns: 98vh;
+    grid-template-rows: 85vw 5vw;
+    grid-template-areas:
+    "appDisplay"
+    "statusInfo";
+    margin: 20px 0;
+    justify-items: center;
+    justify-content: center;
     height: 90vh;
-    margin: 15px auto;
+    width: 98vw;
+    margin: 15px;
     border: 1px red solid;
     background-color: blanchedalmond;
     border-radius: 10px;
     user-select: none;
 }
+
+#appDisplay {grid-area: appDisplay;}
+#gameStatus {grid-area: gameStatus;}
 
 /* mass set to pointer style */
 .gameSelectButton, #backButton, #helpButton, #closeButton, .blackHoleSpace, #enterButton {
@@ -137,14 +150,13 @@ h1 {
     "uiHeader uiHeader uiHeader"
     "player1Column gameBoard player2Column"
     "player1Column gameBoard player2Column"
-    "player1Column gameStatus player2Column";
+    "player1Column gameBoard player2Column";
 }
 
 #uiHeader {grid-area: uiHeader;}
 #blackHoleBoard {grid-area: gameBoard;}
 #player1Pieces {grid-area: player1Column;}
 #player2Pieces {grid-area: player2Column;}
-#gameStatus {grid-area: gameStatus;}
 
 #blackHoleBoard {
     margin-top: 50px;
@@ -168,7 +180,7 @@ h1 {
     margin: 0 auto;
 }
 
-.playerPieces {
+.playerColumn {
     display: flex;
     flex-direction: column;
     margin: 15px auto 0 auto;
@@ -191,42 +203,17 @@ h1 {
 }
 
 #gameStatus {
+    position: absolute;
+    bottom: 10px;
     border: 1px black solid;
     line-height: 120px;
     border-radius: 20%;
     text-align: center;
     font-size: 2.5em;
-    margin: 10px 0;
+    margin: 10px;
     background-color: thistle;
 }
 
-/* Blind Poker */
-
-.blindPokerGameScene {
-    display: inline-grid;
-    grid-template-columns: 100px 300px 1fr 300px 100px;
-    grid-template-rows: 70px 1fr 150px 150px;
-    grid-template-areas:
-    "uiHeader uiHeader uiHeader uiHeader uiHeader"
-    "player1Chips player1Card currentPot player2Card player2Chips"
-    "gameActions gameActions gameActions gameActions gameActions"
-    "- gameStatus gameStatus gameStatus -";
-}
-
-#uiHeader {grid-area: uiHeader;}
-#currentPot {grid-area: currentPot;}
-#player1ChipContainer {grid-area: player1Chips;}
-#player2ChipContainer {grid-area: player2Chips;}
-#player1Card {grid-area: player1Card;}
-#player2Card {grid-area: player2Card;}
-#gameActions {grid-area: gameActions;}
-#gameStatus {grid-area: gameStatus;}
-
-.playerChipContainer {
-    width: 100px;
-    height: 100px;
-    border: 1px red solid;
-}
 
 /* options */
 

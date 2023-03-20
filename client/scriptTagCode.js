@@ -1,6 +1,7 @@
 import {blackHoleLoad} from "../src/gameLogic/gameLogic.js";
 
 const handleResponse = async (response, parseResponse) => {
+	// get game if valid
 	if (response.status === 200 || response.status === 201) {
 		let responseJSON = await response.json();
 		console.log(responseJSON);
@@ -96,8 +97,8 @@ const init = () => {
 
 	document.querySelector("#gameContainer").style.display = "none";
 
-	const h1 = document.querySelector("#h1");
+	const gameStatus = document.querySelector("#gameStatus");
 
-	h1.innerHTML = "script tag worked!";
+	gameStatus.innerHTML = "Create an existing game using 4 letters OR join one that already exists!";
 };
 window.onload = init;

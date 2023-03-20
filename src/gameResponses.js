@@ -54,6 +54,7 @@ const getGame = (request, response, queryParams) => {
         console.log('found game');
         message = 'Game with ID found.';
         statusCode = 200;
+        
         break;
       }
     }
@@ -67,11 +68,13 @@ const getGame = (request, response, queryParams) => {
   }
 
   responseJSON = {
-    message,
+    message: message,
   };
 
   if (id) {
     responseJSON.id = id;
+  } else { //no error - gameID is valid
+    responseJSON.gameID = queryParams.gameID;
   }
 
   respond(request, response, statusCode, responseJSON);

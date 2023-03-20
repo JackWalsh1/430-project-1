@@ -20,7 +20,7 @@ export function loadHelpBox(game) {
     '50px',
     '',
     'X',
-    closePopUp,
+    (evt) => closePopUp(),
   );
 
   closeButton.createButton();
@@ -151,7 +151,7 @@ export const setSettings = (game, fromOptionsMenu) => {
 export function delay(delayInms) {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(2);
+      resolve();
     }, delayInms);
   });
 }
@@ -194,7 +194,7 @@ export function createHeader(game) {
     '60px',
     '',
     '←',
-    'GameSelect()',
+    (evt) => flipScreens(),
   );
 
   const helpButton = new Button(
@@ -204,7 +204,7 @@ export function createHeader(game) {
     '60px',
     '#FFFF00',
     `${capitalizeMultipleWords(game)} Rules`,
-    `loadHelpBox('${game}')`,
+    (evt) => loadHelpBox(game)
   );
 
   // create title
