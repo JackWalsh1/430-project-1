@@ -314,7 +314,7 @@ const blackHoleLoad = async (gameID) => {
   if (round === 1) {
     utils.optionPopUp(game);
     if (document.querySelector('#player2Name') === 'P2ToJoin') {
-      let temp = round;
+      const temp = round;
       round = temp;
     }
   }

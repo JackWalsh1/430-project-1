@@ -4,44 +4,21 @@ const handleResponse = async (response, parseResponse) => {
 	// get game if valid
 	if (response.status === 200 || response.status === 201) {
 		let responseJSON = await response.json();
+		let activePlayer = document.querySelector("#playerSelect").value;
 		console.log(responseJSON);
-		return blackHoleLoad(responseJSON.gameID);
+		return blackHoleLoad(responseJSON.gameID, activePlayer);
 	}
-	// get json back
-	let h1;
-	let p;
 
 	// get content and then create h1 / p if needed - otherwise, just get them
-	const content = document.querySelector('#result');
-	h1 = document.querySelector('#h1');
-	p = document.querySelector('#p');
+	const gameStatus = document.querySelector("#gameStatus");
 
 	const statusCodes = {
-	200: `<b>Success</b>`,
-	201: `<b>Created</b>`,
-	204: `<b>Updated (No Content)</b>`,
-	400: `<b>Bad Request</b>`,
-	404: `<b>Not Found</b>`,
-	409: `<b>Data Conflict</b>`
+	400: `<b>Invalid game code. It must be exactly 4 letters.</b>`,
+	404: `Game does not exist. Try creating it!`,
+	409: `Game already exists. Try joining it!`
 	};
 
-	h1.innerHTML = statusCodes[response.status];
-	if (parseResponse && response.status !== 204) {
-	const parsedResponse = await response.json();
-
-	// if the message is good (aka is the users obj)
-	// then display that
-	// otherwise, display the error
-	p.innerHTML = response.status === 200 
-	? JSON.stringify(parsedResponse.message)
-	: `Message: ${JSON.stringify(parsedResponse.message)}`;
-	} else {
-	p.innerHTML = "";
-	}
-
-	//Add the elements to the screen.
-	content.appendChild(h1);
-	content.appendChild(p);    
+	gameStatus.innerHTML = statusCodes[response.status]; 
 };
 
 const joinGame = async (joinGameForm) => {

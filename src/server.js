@@ -27,6 +27,7 @@ const routes = {
   },
   POST: {
     '/createGame': gameHandler.createGame,
+    '/sendPlayerName': gameHandler.sendPlayerName,
     '/sendMove': gameHandler.sendMove,
     notFound: gameHandler.notFound,
   },

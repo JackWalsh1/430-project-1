@@ -203,15 +203,19 @@ h1 {
 }
 
 #gameStatus {
+    height: 4.2em;
     position: absolute;
     bottom: 10px;
     border: 1px black solid;
-    line-height: 120px;
     border-radius: 20%;
     text-align: center;
-    font-size: 2.5em;
+    font-size: 2em;
     margin: 10px;
     background-color: thistle;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
 }
 
 

@@ -108,8 +108,7 @@ export const setSettings = (currentGame, fromOptionsMenu) => {
 };
 
 // open option pop up with relevant info for player
-export function optionPopUp(game) {
-  const { moveCount } = game;
+export function optionPopUp(game, activePlayer) {
   // disable all content outside pop up
   document.body.querySelector('#gameContainer').classList.add('isDisabled');
 
@@ -135,8 +134,8 @@ export function optionPopUp(game) {
 
   const playerNameLabel = document.createElement('label');
   playerNameInput.setAttribute('class', 'label');
-  playerNameLabel.htmlFor = `player${moveCount + 1}NameInput`;
-  playerNameLabel.innerHTML = `Player ${moveCount + 1} Name: `;
+  playerNameLabel.htmlFor = `player${activePlayer === 'Red' ? 1 : 2}NameInput`;
+  playerNameLabel.innerHTML = `Player ${activePlayer === 'Red' ? 1 : 2} Name: `;
 
   playerName.append(playerNameLabel, playerNameInput);
   options.append(playerName);

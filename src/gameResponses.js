@@ -252,6 +252,55 @@ const createGame = (request, response, body) => {
   }
 };
 
+const sendPlayerName = (request, response, body) => {
+  errorJSON = {};
+  const gameID = body.gameID.toUpperCase();
+
+  // find if game requested exists
+  if (findGame(gameID)) {
+    // check if player is specified and name exists
+    if ((body.player === 'Red' || body.player === 'Blue') && body.name) {
+      const game = games[gameID];
+      // check if correct move to be setting player name
+      if ((game.moveCount === 0 && body.player === 'Red')
+       || (game.moveCount === 1 && body.player === 'Blue')) {
+        game.playerNames[game.moveCount] = body.name;
+        gameJSON = {
+          message: 'Name successfully added.',
+        };
+        statusCode = 201;
+      } else {
+        // game is already over
+        errorJSON = {
+          message: 'Game is past Turn 1 setup.',
+          id: 'invalidNameTiming',
+        };
+        statusCode = 204;
+      }
+    } else {
+      errorJSON = {
+        message: 'At least one of player / name parameters are invalid or missing.',
+        id: 'invalidParams',
+      };
+      statusCode = 400;
+    }
+  } else {
+    // if game doesn't exist, throw out 404
+    errorJSON = {
+      message: 'GameID is not one already stored in system.',
+      id: 'gameDoesNotExist',
+    };
+    statusCode = 404;
+  }
+
+  // valid game
+  if (statusCode !== 201) {
+    respond(request, response, statusCode, errorJSON);
+  } else {
+    respond(request, response, statusCode, gameJSON);
+  }
+};
+
 // checks if a move is legal, then completes it if it is
 const sendMove = (request, response, body) => {
   // get game
@@ -285,10 +334,14 @@ const sendMove = (request, response, body) => {
           piece value is piece value
           */
           game.gameState[body.space.charCodeAt(0) - 65] = player[0] + pieceValue;
-          gameJSON = { message: 'Move made successfully' };
+          game.moveCount += 1;
+          gameJSON = {
+            message: 'Move completed successfully.',
+          };
+          statusCode = 201;
         } else {
           // player can't place a tile
-          responseJSON = {
+          errorJSON = {
             message: "It is the other player's turn.",
             id: 'otherPlayersTurn',
           };
@@ -296,7 +349,7 @@ const sendMove = (request, response, body) => {
         }
       } else {
         // game is already over
-        responseJSON = {
+        errorJSON = {
           message: 'Game is already complete.',
           id: 'completeGame',
         };
@@ -323,7 +376,7 @@ const sendMove = (request, response, body) => {
     }
   } else {
     // if game doesn't exist, throw out 404
-    responseJSON = {
+    errorJSON = {
       message: 'GameID is not one already stored in system.',
       id: 'gameDoesNotExist',
     };
@@ -331,9 +384,11 @@ const sendMove = (request, response, body) => {
   }
 
   // valid game
-  if (errorJSON !== {}) {
+  if (statusCode !== 201) {
+    console.log('errorJSON sent');
     respond(request, response, statusCode, errorJSON);
   } else {
+    console.log('gameJSON sent');
     respond(request, response, statusCode, gameJSON);
   }
 };
@@ -346,5 +401,6 @@ module.exports = {
   notFound,
   notFoundMeta,
   createGame,
+  sendPlayerName,
   sendMove,
 };
