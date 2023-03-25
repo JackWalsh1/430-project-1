@@ -186,7 +186,7 @@ function capitalizeFirstChar(word) {
 
 // capitalize multiple words
 function capitalizeMultipleWords(incomingWords) {
-  let result;
+  let result = '';
   let words = incomingWords;
 
   for (let i = 0; i < words.length; i++) {
