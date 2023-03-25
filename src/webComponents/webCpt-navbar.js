@@ -18,8 +18,8 @@ navbarTemplate.innerHTML = `
 
 <div class="navbar-menu" id="nav-links">   
 <div class="navbar-start">
-  <a class="navbar-item is-hoverable" id="app" href="app.html">
-    App
+  <a class="navbar-item is-hoverable" id="game" href="game.html">
+    Game
   </a>
 
   <a class="navbar-item is-hoverable" id="documentation" href="documentation.html">
@@ -28,8 +28,6 @@ navbarTemplate.innerHTML = `
 </div>
 </div>
 `;
-
-const pageNames = ['app', 'documentation'];
 
 class WebCptNavbar extends HTMLElement {
   constructor() {
@@ -41,7 +39,8 @@ class WebCptNavbar extends HTMLElement {
   }
 
   connectedCallback() {
-    // This line of code will create an property named `span` for us, so that we don't have to keep calling this.shadowRoot.querySelector("span");
+    // This line of code will create an property named `span` for us, so that we
+    // don't have to keep calling this.shadowRoot.querySelector("span");
     this.a = this.shadowRoot.querySelector('a');
     this.span = this.shadowRoot.querySelector('span');
     this.navbar = this.shadowRoot.querySelector('#nav-links');
@@ -55,7 +54,7 @@ class WebCptNavbar extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this.burgerToggle.onclick = () => { null; };
+    this.burgerToggle.onclick = () => null;
     this.render();
   }
 

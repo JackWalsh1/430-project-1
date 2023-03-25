@@ -1,4 +1,4 @@
-import {blackHoleLoad} from "../src/gameLogic/gameLogic.js";
+import blackHoleLoad from "../src/gameLogic/gameLogic.js";
 
 const handleResponse = async (response, parseResponse) => {
 	// get game if valid

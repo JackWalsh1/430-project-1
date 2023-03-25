@@ -1,6 +1,9 @@
 // creates button
 // functionName = function that button calls when pressed
-export class Button {
+
+/* eslint-env global */
+
+export default class Button {
   constructor(idName, className, width, height, backgroundColor, text, onclick) {
     this.idName = idName;
     this.className = className;
@@ -27,9 +30,9 @@ export class Button {
         button.setAttribute('class', this.className);
       }
       if (this.onclick) {
-        button.addEventListener('click', evt => {
+        button.addEventListener('click', (evt) => {
           this.onclick(evt);
-        })
+        });
       }
 
       // set dimensions / color

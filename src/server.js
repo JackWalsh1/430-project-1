@@ -35,7 +35,7 @@ const routes = {
 const parseBody = (request, response, handler) => {
   const body = [];
 
-  request.on('error', (err) => {
+  request.on('error', () => {
     response.statusCode = 400;
     response.end();
   });
