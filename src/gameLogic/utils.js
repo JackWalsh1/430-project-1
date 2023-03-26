@@ -1,5 +1,18 @@
 import Button from './buttonClass.js';
 
+// gets current game state and returns game obj from json
+export async function getGameState(gameID) {
+  const response = await fetch(`/getGameState?gameID=${gameID}`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  const json = await response.json();
+  return json.game;
+}
+
 // close popup
 export const closePopUp = () => {
   // enable container
@@ -85,26 +98,61 @@ export function toggleDiv(divID) {
 }
 
 // push settings to main game
-export const setSettings = (currentGame, fromOptionsMenu) => {
-  const game = currentGame;
+export const setSettings = async (currentGame, fromOptionsMenu, activePlayer) => {
+  let game = currentGame;
   console.log('set settings');
   // if value just set
   if (fromOptionsMenu) {
     const name = document.querySelector('#playerNameInput').value;
     // if name space was blank, set as Player X - otherwise, use name
-    game.playerNames[game.moveCount] = name === '' ? `Player ${game.moveCount + 1}` : name;
+    const formData = `gameID=${currentGame.id}&player=${activePlayer}&name=${
+      name === '' ? `Player ${game.moveCount + 1}` : name}`;
+
+    // set player name in game obj
+    await fetch('/sendPlayerName', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'application/json',
+      },
+      body: formData,
+    });
+
+    // update game
+    game = await getGameState(game.id);
+
+    document.body.querySelector('#gameContainer').classList.remove('isDisabled');
+    document.querySelector('#backDim').remove();
+    document.querySelector('#popUpContainer').remove();
   }
 
   document.body.querySelector('#player1Name').innerHTML = game.playerNames[0];
   // if player 2 isn't 8 question marks, have it show waiting - else, display name
   document.body.querySelector('#player2Name').innerHTML = game.playerNames[1] === '????????' ? 'P2ToJoin' : game.playerNames[1];
 
-  document.body.querySelector('#gameStatus').innerHTML = `${game.playerNames[game.moveCount]}, place your 1 piece.`;
+  if (game.moveCount === 20) {
+    // display final results
+  } else {
+    const nextMove = game.moveCount % 2 === 0 ? 'Red' : 'Blue';
+    let statusMessage = '';
+    if (nextMove === activePlayer) {
+    // say "it's your turn"
+      console.log('active player');
+      statusMessage = `${game.playerNames[game.moveCount % 2]}, place your ${Math.floor(game.moveCount / 2) + 1} piece.`;
+    } else {
+    // get other player's name and say it's their turn
+      console.log('not active player');
+      let playerToGo = game.playerNames[nextMove === 'Red' ? 0 : 1];
+      if (playerToGo === '????????') {
+        playerToGo = 'second player to join and';
+      } else {
+        playerToGo += ' to';
+      }
+      statusMessage = `Waiting on ${playerToGo} place their ${Math.floor(game.moveCount / 2) + 1} piece.`;
+    }
 
-  document.body.querySelector('#gameContainer').classList.remove('isDisabled');
-
-  document.querySelector('#backDim').remove();
-  document.querySelector('#popUpContainer').remove();
+    document.body.querySelector('#gameStatus').innerHTML = statusMessage;
+  }
 };
 
 // open option pop up with relevant info for player
@@ -147,7 +195,7 @@ export function optionPopUp(game, activePlayer) {
     '50px',
     'gray',
     'Start Game',
-    () => setSettings(game, true),
+    () => setSettings(game, true, activePlayer),
   );
 
   popUpContainer.append(options, enterButton.createButton());
@@ -177,6 +225,8 @@ export function resetGame(inputGameContainer) {
 export function flipScreens() {
   toggleDiv('#homeScreen');
   toggleDiv('#gameContainer');
+  const gameStatus = document.querySelector('#gameStatus');
+  gameStatus.innerHTML = 'Create an existing game using 4 letters OR join one that already exists!';
 }
 
 // capitalize first character of words

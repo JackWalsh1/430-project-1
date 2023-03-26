@@ -8,18 +8,22 @@
     margin: 20px 0;
     justify-items: center;
     justify-content: center;
-    height: 90vh;
     width: 98vw;
-    margin: 15px;
+    min-width: 1000px;
+    margin: 5vh 5vw;
     border: 1px red solid;
     background-color: blanchedalmond;
     border-radius: 10px;
     user-select: none;
+    height: 90vh;
 }
 
 #appDisplay {grid-area: appDisplay;}
 #gameStatus {grid-area: gameStatus;}
 
+#appDisplay {
+    max-height: 90vh;
+}
 /* mass set to pointer style */
 .gameSelectButton, #backButton, #helpButton, #closeButton, .blackHoleSpace, #enterButton {
     cursor: pointer;
@@ -109,12 +113,13 @@ h1 {
 
 #uiHeader {
     display: grid;
-    grid-template-columns: 150px 1fr 150px;
+    grid-template-columns: 14vw 50vw 14vw;
     grid-template-rows: 70px;
     grid-template-areas:
     "backButton gameTitle helpButton";
     margin: 20px 0;
     justify-items: center;
+    min-width: 1000px;
 }
 
 #backButton {grid-area: backButton;}
@@ -144,13 +149,14 @@ h1 {
 
 .blackHoleGameScene {
     display: grid;
-    grid-template-columns: 150px 1fr 150px;
+    grid-template-columns: 10vw 50vw 10vw;
     grid-template-rows: 70px 150px 1fr 150px;
     grid-template-areas:
     "uiHeader uiHeader uiHeader"
     "player1Column gameBoard player2Column"
     "player1Column gameBoard player2Column"
     "player1Column gameBoard player2Column";
+    min-width: 1000px;
 }
 
 #uiHeader {grid-area: uiHeader;}
@@ -216,6 +222,7 @@ h1 {
     justify-content: center;
     align-content: center;
     flex-direction: column;
+    max-width: 65vw;
 }
 
 

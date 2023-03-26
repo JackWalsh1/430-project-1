@@ -253,6 +253,7 @@ const createGame = (request, response, body) => {
 };
 
 const sendPlayerName = (request, response, body) => {
+  statusCode = 0;
   errorJSON = {};
   const gameID = body.gameID.toUpperCase();
 
@@ -269,6 +270,7 @@ const sendPlayerName = (request, response, body) => {
           message: 'Name successfully added.',
         };
         statusCode = 201;
+        console.log(game.playerNames);
       } else {
         // game is already over
         errorJSON = {

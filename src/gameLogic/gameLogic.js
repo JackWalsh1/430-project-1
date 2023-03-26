@@ -12,19 +12,6 @@ let player2Tiles = [];
 
 let blackHoleBoardArray;
 
-// gets current game state and returns game obj from json
-async function getGameState(gameID) {
-  const response = await fetch(`/getGameState?gameID=${gameID}`, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-    },
-  });
-
-  const json = await response.json();
-  return json.game;
-}
-
 function createPlayerColumn(player, currentRound) {
   const redPlayer = {
     playerNum: 1,
@@ -192,7 +179,6 @@ const updateGameState = (currentState, activePlayer) => {
       }
       statusMessage = `Waiting on ${playerToGo} place their ${round} piece.`;
     }
-    console.log('gets to bottom of if');
     document.body.querySelector('#gameStatus').innerHTML = statusMessage;
   }
 
@@ -216,22 +202,22 @@ const placePiece = async (letter, gameID, activePlayer) => {
 
   // piece updated
   if (response.status === 201) {
-    const currentState = await getGameState(gameID);
+    const currentState = await utils.getGameState(gameID);
     updateGameState(currentState, activePlayer);
   } else { // player has tried to make illegal move
-    const tempStorage = document.body.querySelector('#gameStatus').innerHTML;
-    document.body.querySelector('#gameStatus').innerHTML = `It is not your turn. Please wait for
-    the other player to go. \n${tempStorage}`;
+    const gameStatusHTML = document.body.querySelector('#gameStatus').innerHTML;
+    const tempStorage = gameStatusHTML.slice(gameStatusHTML.indexOf('W'));
+    document.body.querySelector('#gameStatus').innerHTML = 
+    "It is not your turn. Please wait for the other player to go.<br>" + tempStorage;
   }
 };
 
 async function gameLoop(game, activePlayer) {
-  const currentState = getGameState(game.id);
+  const currentState = await utils.getGameState(game.id);
   let updatedState = '';
   // opponent has made a move
   if (currentState.moveCount !== game.moveCount) {
     console.log('change in game state');
-    console.log(currentState);
     updatedState = updateGameState(currentState, activePlayer);
   }
   // set a delay, then check again
@@ -250,7 +236,7 @@ const blackHoleLoad = async (gameID, activePlayer) => {
   utils.createHeader('blackHole');
 
   // get gamestate
-  const game = await getGameState(gameID);
+  const game = await utils.getGameState(gameID);
 
   console.log(game);
 
@@ -294,14 +280,24 @@ const blackHoleLoad = async (gameID, activePlayer) => {
   const rowJumps = [6, 11, 15, 18, 20];
   // for each space
   for (let i = 0; i < 21; i++) {
+    const currentSpace = game.gameState[i];
+    let color = 'gray';
+    let number = String.fromCharCode(65 + i);
+
+    // if value already there
+    if (currentSpace.length > 1) {
+      color = currentSpace.substring(0, 1) === 'R' ? '#FF0000' : '#0000FF';
+      number = currentSpace.substring(1);
+    }
+
     // create space
     const blackHoleSpace = new Button(
       `blackHoleSpace${String.fromCharCode(65 + i)}`,
       'blackHoleSpace',
       '88px',
       '88px',
-      'gray',
-      String.fromCharCode(65 + i),
+      color,
+      number,
       () => placePiece(String.fromCharCode(65 + i), gameID, activePlayer),
     );
 
@@ -320,16 +316,21 @@ const blackHoleLoad = async (gameID, activePlayer) => {
   blackHoleRows.forEach((row) => blackHoleBoard.append(row));
   gameContainer.append(blackHoleBoard);
 
-  console.log(round);
-  console.log(game);
-
-  // sends to individual option screen
-  if (round === 1) {
-    utils.optionPopUp(game, activePlayer);
-    if (document.querySelector('#player2Name') === 'P2ToJoin') {
-      const temp = round;
-      round = temp;
+  for (let i = 0; i < 21; i++) {
+    const boardSpace = document.querySelector(`#blackHoleSpace${String.fromCharCode(65 + i)}`);
+    if (boardSpace.style.backgroundColor !== 'gray') {
+      console.log('piece disabled');
+      boardSpace.classList.add('isDisabled');
     }
+  }
+
+  // if needed, prompt for player name -
+  // else, just jump to set settings
+  if ((game.moveCount === 0 && activePlayer === 'Red')
+  || (game.moveCount === 1 && activePlayer === 'Blue')) {
+    utils.optionPopUp(game, activePlayer);
+  } else {
+    utils.setSettings(game, false, activePlayer);
   }
 
   // go to game loop
@@ -337,15 +338,3 @@ const blackHoleLoad = async (gameID, activePlayer) => {
 };
 
 export default blackHoleLoad;
-// async function updateGameState(gameID, updatedGameData) {
-//   const formData = `gameID=${gameID}&player=${player.value}&space=${space.value}`;
-
-//   const response = await fetch('/sendMove', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/x-www-form-urlencoded',
-//       Accept: 'application/json',
-//     },
-//     body: formData,
-//   });
-// }
