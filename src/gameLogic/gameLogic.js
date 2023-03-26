@@ -7,9 +7,6 @@ let gameContainer = document.querySelector('#gameContainer');
 // global variables for games
 let round;
 let remainingTiles = [];
-let player1Tiles = [];
-let player2Tiles = [];
-
 let blackHoleBoardArray;
 
 function createPlayerColumn(player, currentRound) {
@@ -54,53 +51,67 @@ function createPlayerColumn(player, currentRound) {
   return playerColumn;
 }
 
-function calculateWinner() {
-  const blackHole = remainingTiles[0].div;
-  let blackHoleRow; let
-    blackHolePosition;
-  const player1ScoreTiles = [];
-  const player2ScoreTiles = [];
+function calculateWinner(game) {
+  let blackHole;
+  const playerScoreTiles = [[], []];
   let player1Score = 0;
   let player2Score = 0;
   let result;
+  
+  console.log(game);
 
-  // find position of black hole in pyramid structure
-  for (let i = 0; i < blackHoleBoardArray.length; i++) {
-    for (let j = 0; j < blackHoleBoardArray[i].length; j++) {
-      if (blackHoleBoardArray[i][j] === blackHole) {
-        blackHoleRow = i;
-        blackHolePosition = j;
-        blackHoleBoardArray[i][j].classList.add('isDisabled');
-      }
+  for (let i = 0; i < game.gameState.length; i++) {
+    if (game.gameState[i].length === 1) {
+      blackHole = game.gameState[i];
+      break;
     }
   }
 
-  // create two arrays of sucked in numbers - one for each player
-  for (let i = -1; i < 2; i++) {
-    for (let j = -1; j < 2; j++) {
-      // ignores non-adjacent squares
-      if (i !== j) {
-        // excludes non-real indexes - a lot of weird math behind this one...
-        if (
-          blackHoleRow + i + blackHolePosition + j < 6
-                      && blackHoleRow + i >= 0
-                      && blackHolePosition + j >= 0) {
-          // check which player's piece was sucked in
-          const spaceSuckedIn = blackHoleBoardArray[blackHoleRow + i][blackHolePosition + j];
-          // by cycling through all ten possible tiles
-          for (let k = 0; k < 10; k++) {
-            // push value of space + add it to sum
-            if (spaceSuckedIn === player1Tiles[k]) {
-              player1ScoreTiles.push(spaceSuckedIn.innerHTML);
-              player1Score += parseInt(spaceSuckedIn.innerHTML, 10);
-            } else if (spaceSuckedIn === player2Tiles[k]) {
-              player2ScoreTiles.push(spaceSuckedIn.innerHTML);
-              player2Score += parseInt(spaceSuckedIn.innerHTML, 10);
-            }
-          }
-        }
-      }
-    }
+  console.log(blackHole);
+
+  const suckedInTilesDict = {
+    A: [1, 6],
+    B: [0, 2, 6, 7],
+    C: [1, 3, 7, 8],
+    D: [2, 4, 8, 9],
+    E: [3, 5, 9, 10],
+    F: [4, 10],
+    G: [0, 1, 7, 11],
+    H: [1, 2, 6, 8, 11, 12],
+    I: [2, 3, 7, 9, 12, 13],
+    J: [3, 4, 8, 10, 13, 14],
+    K: [4, 5, 9, 14],
+    L: [6, 7, 12, 15],
+    M: [7, 8, 11, 13, 15, 16],
+    N: [8, 9, 12, 14, 16, 17],
+    O: [9, 10, 13, 17],
+    P: [11, 12, 16, 18],
+    Q: [12, 13, 15, 17, 18, 19],
+    R: [13, 14, 16, 19],
+    S: [15, 16, 19, 20],
+    T: [16, 17, 18, 20],
+    U: [18, 19],
+  };
+
+  const suckedInTiles = suckedInTilesDict[blackHole];
+
+  console.log(suckedInTiles);
+
+  for (let i = 0; i < suckedInTiles.length; i++) {
+    const tileToCheck = game.gameState[suckedInTiles[i]];
+    console.log(tileToCheck);
+    playerScoreTiles[tileToCheck[0] === 'R' ? 0 : 1].push(tileToCheck.splice(1));
+  }
+
+  const player1ScoreTiles = playerScoreTiles[0];
+  const player2ScoreTiles = playerScoreTiles[1];
+
+  for (let i = 0; i < player1ScoreTiles; i++) {
+    player1Score += parseInt(player1ScoreTiles[i], 10);
+  }
+
+  for (let i = 0; i < player2ScoreTiles; i++) {
+    player2Score += parseInt(player2ScoreTiles[i], 10);
   }
 
   // check win conditions
@@ -113,27 +124,26 @@ function calculateWinner() {
       player1ScoreTiles.sort((a, b) => b - a);
       player2ScoreTiles.sort((a, b) => b - a);
       for (let i = 0; i < player1ScoreTiles.length; i++) {
-        if (player1ScoreTiles[i] < player2ScoreTiles[i]) {
-          result = `${document.body.querySelector('#player1Name').innerHTML} has won by having a ${player1ScoreTiles[i]} vs a ${player2ScoreTiles[i]} sucked in!`;
-        } else if (player1ScoreTiles[i] > player2ScoreTiles[i]) {
-          result = `${document.body.querySelector('#player2Name').innerHTML} has won by having a ${player2ScoreTiles[i]} vs a ${player1ScoreTiles[i]} sucked in!`;
+        if (player1ScoreTiles[i] !== player2ScoreTiles[i]) {
+          const p1Win = player1ScoreTiles[i] < player2ScoreTiles[i];
+          result = `${document.body.querySelector(`#player${p1Win ? 1 : 2}Name`).innerHTML} has won
+           by having a ${p1Win ? player1ScoreTiles[i] : player2ScoreTiles[i]} vs a
+            ${p1Win ? player2ScoreTiles[i] : player1ScoreTiles[i]} sucked in!`;
         }
         // everything else is just a result being stored and printed
       }
       if (!result) {
         result = 'This game is a perfect tie!';
       }
-    } else if (player1ScoreTiles.length < player2ScoreTiles.length) {
-      result = `${document.body.querySelector('#player1Name').innerHTML} has won by having less pieces sucked in!`;
     } else {
-      result = `${document.body.querySelector('#player2Name').innerHTML} has won by having less pieces sucked in!`;
+      const p1Win = player1ScoreTiles.length < player2ScoreTiles.length;
+      result = `${document.body.querySelector(`#player${p1Win ? 1 : 2}Name`).innerHTML} has won by having less pieces sucked in!`;
     }
-  } else if (player1Score < player2Score) {
-    result = `${document.body.querySelector('#player1Name').innerHTML} has won by a score of ${player1Score} to ${player2Score}!`;
   } else {
-    result = `${document.body.querySelector('#player2Name').innerHTML} has won by a score of ${player2Score} to ${player1Score}!`;
+    const p1Win = player1Score < player2Score;
+    result = `${document.body.querySelector(`#player${p1Win ? 1 : 2}Name`).innerHTML} has won by a score of ${player1Score} to ${player2Score}!`;
+    document.body.querySelector('#gameStatus').innerHTML = result;
   }
-  document.body.querySelector('#gameStatus').innerHTML = result;
 }
 
 // decide what piece was selected, add them to player list, and then swap player / round
@@ -160,7 +170,7 @@ const updateGameState = (currentState, activePlayer) => {
   }
 
   if (currentState.moveCount === 20) {
-    calculateWinner();
+    calculateWinner(currentState);
   } else {
     const nextMove = currentState.moveCount % 2 === 0 ? 'Red' : 'Blue';
     let statusMessage = '';
@@ -207,8 +217,7 @@ const placePiece = async (letter, gameID, activePlayer) => {
   } else { // player has tried to make illegal move
     const gameStatusHTML = document.body.querySelector('#gameStatus').innerHTML;
     const tempStorage = gameStatusHTML.slice(gameStatusHTML.indexOf('W'));
-    document.body.querySelector('#gameStatus').innerHTML = 
-    "It is not your turn. Please wait for the other player to go.<br>" + tempStorage;
+    document.body.querySelector('#gameStatus').innerHTML = `It is not your turn. Please wait for the other player to go.<br>${tempStorage}`;
   }
 };
 
@@ -218,10 +227,14 @@ async function gameLoop(game, activePlayer) {
   // opponent has made a move
   if (currentState.moveCount !== game.moveCount) {
     console.log('change in game state');
-    updatedState = updateGameState(currentState, activePlayer);
+    updatedState = await updateGameState(currentState, activePlayer);
+  }
+
+  if ((updatedState !== '' && updatedState.moveCount === 20) || currentState.moveCount === 20) {
+    calculateWinner(updatedState !== '' ? updatedState : currentState);
   }
   // set a delay, then check again
-  await utils.delay(2000);
+  await utils.delay(100);
   // send game if no change - else, send updatedState to replace game
   gameLoop(updatedState !== '' ? updatedState : game, activePlayer);
 }
@@ -245,8 +258,6 @@ const blackHoleLoad = async (gameID, activePlayer) => {
 
   // set defaults to fill in later
   remainingTiles = [];
-  player1Tiles = [];
-  player2Tiles = [];
 
   // create player columns / append them
   const player1Column = createPlayerColumn('red', round);
@@ -324,6 +335,10 @@ const blackHoleLoad = async (gameID, activePlayer) => {
     }
   }
 
+  // just show result
+  if (!game.active) {
+    calculateWinner(game);
+  }
   // if needed, prompt for player name -
   // else, just jump to set settings
   if ((game.moveCount === 0 && activePlayer === 'Red')

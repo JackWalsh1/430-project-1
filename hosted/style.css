@@ -113,7 +113,7 @@ h1 {
 
 #uiHeader {
     display: grid;
-    grid-template-columns: 14vw 50vw 14vw;
+    grid-template-columns: 10vw 50vw 10vw;
     grid-template-rows: 70px;
     grid-template-areas:
     "backButton gameTitle helpButton";
