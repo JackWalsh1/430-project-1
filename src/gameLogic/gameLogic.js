@@ -57,8 +57,6 @@ function calculateWinner(game) {
   let player1Score = 0;
   let player2Score = 0;
   let result;
-  
-  console.log(game);
 
   for (let i = 0; i < game.gameState.length; i++) {
     if (game.gameState[i].length === 1) {
@@ -99,20 +97,22 @@ function calculateWinner(game) {
 
   for (let i = 0; i < suckedInTiles.length; i++) {
     const tileToCheck = game.gameState[suckedInTiles[i]];
-    console.log(tileToCheck);
-    playerScoreTiles[tileToCheck[0] === 'R' ? 0 : 1].push(tileToCheck.splice(1));
+    playerScoreTiles[tileToCheck[0] === 'R' ? 0 : 1].push(tileToCheck.substring(1));
   }
 
   const player1ScoreTiles = playerScoreTiles[0];
   const player2ScoreTiles = playerScoreTiles[1];
 
-  for (let i = 0; i < player1ScoreTiles; i++) {
+  for (let i = 0; i < player1ScoreTiles.length; i++) {
     player1Score += parseInt(player1ScoreTiles[i], 10);
   }
 
-  for (let i = 0; i < player2ScoreTiles; i++) {
+  for (let i = 0; i < player2ScoreTiles.length; i++) {
     player2Score += parseInt(player2ScoreTiles[i], 10);
   }
+
+  console.log(player1Score);
+  console.log(player2Score);
 
   // check win conditions
   // if the score is higher
@@ -142,8 +142,9 @@ function calculateWinner(game) {
   } else {
     const p1Win = player1Score < player2Score;
     result = `${document.body.querySelector(`#player${p1Win ? 1 : 2}Name`).innerHTML} has won by a score of ${player1Score} to ${player2Score}!`;
-    document.body.querySelector('#gameStatus').innerHTML = result;
   }
+
+  document.body.querySelector('#gameStatus').innerHTML = result;
 }
 
 // decide what piece was selected, add them to player list, and then swap player / round
@@ -164,13 +165,16 @@ const updateGameState = (currentState, activePlayer) => {
       spaceToAdjust.innerHTML = number;
       spaceToAdjust.classList.add('isDisabled');
 
-      document.body.querySelector(`#player${color === 'R' ? 1 : 2}Piece${round}`).remove();
+      document.body.querySelector(`#player${color === 'R' ? 1 : 2}Piece${number}`).remove();
       remainingTiles.splice(remainingTiles.findIndex((tile) => tile.idName === `blackHoleSpace${String.fromCharCode(65 + i)}`), 1);
     }
   }
 
   if (currentState.moveCount === 20) {
     calculateWinner(currentState);
+  } else if (currentState.moveCount === 19 && activePlayer === 'Red') {
+    // don't allow any additional actions from Red
+    document.querySelector('#blackHoleBoard').classList.add('isDisabled');
   } else {
     const nextMove = currentState.moveCount % 2 === 0 ? 'Red' : 'Blue';
     let statusMessage = '';
@@ -228,13 +232,19 @@ async function gameLoop(game, activePlayer) {
   if (currentState.moveCount !== game.moveCount) {
     console.log('change in game state');
     updatedState = await updateGameState(currentState, activePlayer);
+    if (updatedState.moveCount === 20) {
+      calculateWinner(updatedState);
+    }
   }
 
-  if ((updatedState !== '' && updatedState.moveCount === 20) || currentState.moveCount === 20) {
-    calculateWinner(updatedState !== '' ? updatedState : currentState);
+  // says "no more actions allowed- game is over"
+  if (!document.querySelector('#blackHoleBoard').classList.contains('isDisabled')
+  && (updatedState.active === false || currentState.active === false)) {
+    document.querySelector('#blackHoleBoard').classList.add('isDisabled');
   }
+
   // set a delay, then check again
-  await utils.delay(100);
+  await utils.delay(500);
   // send game if no change - else, send updatedState to replace game
   gameLoop(updatedState !== '' ? updatedState : game, activePlayer);
 }
@@ -339,10 +349,13 @@ const blackHoleLoad = async (gameID, activePlayer) => {
   if (!game.active) {
     calculateWinner(game);
   }
+
+  console.log(game.moveCount);
+  console.log(game.playerNames);
   // if needed, prompt for player name -
   // else, just jump to set settings
-  if ((game.moveCount === 0 && activePlayer === 'Red')
-  || (game.moveCount === 1 && activePlayer === 'Blue')) {
+  if (game.moveCount < 2
+    && game.playerNames[(activePlayer === 'Red' ? 0 : 1)] === '????????') {
     utils.optionPopUp(game, activePlayer);
   } else {
     utils.setSettings(game, false, activePlayer);

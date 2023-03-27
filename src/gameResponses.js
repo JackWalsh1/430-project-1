@@ -263,9 +263,9 @@ const sendPlayerName = (request, response, body) => {
     if ((body.player === 'Red' || body.player === 'Blue') && body.name) {
       const game = games[gameID];
       // check if correct move to be setting player name
-      if ((game.moveCount === 0 && body.player === 'Red')
+      if ((game.moveCount === 0)
        || (game.moveCount === 1 && body.player === 'Blue')) {
-        game.playerNames[game.moveCount] = body.name;
+        game.playerNames[body.player === 'Red' ? 0 : 1] = body.name;
         gameJSON = {
           message: 'Name successfully added.',
         };
@@ -337,6 +337,11 @@ const sendMove = (request, response, body) => {
           */
           game.gameState[body.space.charCodeAt(0) - 65] = player[0] + pieceValue;
           game.moveCount += 1;
+
+          if (game.moveCount === 20) {
+            game.active = false;
+          }
+
           gameJSON = {
             message: 'Move completed successfully.',
           };
