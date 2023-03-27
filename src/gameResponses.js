@@ -88,7 +88,6 @@ const getGame = (request, response, queryParams) => {
     for (let i = 0; i < gameIDs.length; i++) {
       const game = gameIDs[i];
       if (gameID === game) {
-        console.log('found game');
         message = 'Game with ID found.';
         statusCode = 200;
 
@@ -160,15 +159,12 @@ const getGameMeta = (request, response, queryParams) => {
 
   // set statusCode to impossible - is going to be changed
   statusCode = 0;
-
-  console.log('getGame');
   if (!queryParams.gameID) {
     statusCode = 400;
   } else {
     for (let i = 0; i < gameIDs.length; i++) {
       const game = gameIDs[i];
       if (queryParams.gameID === game) {
-        console.log('found game');
         statusCode = 200;
         break;
       }
@@ -270,7 +266,6 @@ const sendPlayerName = (request, response, body) => {
           message: 'Name successfully added.',
         };
         statusCode = 201;
-        console.log(game.playerNames);
       } else {
         // game is already over
         errorJSON = {
@@ -392,10 +387,8 @@ const sendMove = (request, response, body) => {
 
   // valid game
   if (statusCode !== 201) {
-    console.log('errorJSON sent');
     respond(request, response, statusCode, errorJSON);
   } else {
-    console.log('gameJSON sent');
     respond(request, response, statusCode, gameJSON);
   }
 };

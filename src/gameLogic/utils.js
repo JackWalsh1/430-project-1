@@ -100,7 +100,6 @@ export function toggleDiv(divID) {
 // push settings to main game
 export const setSettings = async (currentGame, fromOptionsMenu, activePlayer) => {
   let game = currentGame;
-  console.log('set settings');
   // if value just set
   if (fromOptionsMenu) {
     const name = document.querySelector('#playerNameInput').value;
@@ -137,11 +136,9 @@ export const setSettings = async (currentGame, fromOptionsMenu, activePlayer) =>
     let statusMessage = '';
     if (nextMove === activePlayer) {
     // say "it's your turn"
-      console.log('active player');
       statusMessage = `${game.playerNames[game.moveCount % 2]}, place your ${Math.floor(game.moveCount / 2) + 1} piece.`;
     } else {
     // get other player's name and say it's their turn
-      console.log('not active player');
       let playerToGo = game.playerNames[nextMove === 'Red' ? 0 : 1];
       if (playerToGo === '????????') {
         playerToGo = 'second player to join and';

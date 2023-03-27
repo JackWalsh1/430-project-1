@@ -32,7 +32,6 @@ const getCSS = (request, response) => {
 
 // Serve the bundle.js file
 const getBundle = (request, response) => {
-  console.log('grabbing bundle');
   response.writeHead(200, { 'Content-Type': 'application/javascript' });
   response.write(bundle);
   response.end();

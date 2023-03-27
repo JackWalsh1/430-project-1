@@ -5,7 +5,6 @@ const handleResponse = async (response, parseResponse) => {
 	if (response.status === 200 || response.status === 201) {
 		let responseJSON = await response.json();
 		let activePlayer = document.querySelector("#playerSelect").value;
-		console.log(responseJSON);
 		return blackHoleLoad(responseJSON.gameID, activePlayer);
 	}
 
@@ -25,7 +24,6 @@ const joinGame = async (joinGameForm) => {
 	// build response for get OR head using url / method consts
 	let gameID = joinGameForm.querySelector("#gameIDField").value;
 	//let url = `/getGame?gameID=${gameID}`;
-	console.log(gameID);
 	let response = await fetch ("/getGame?gameID=" + gameID, {
 		method: "GET",
 		headers: {

@@ -65,8 +65,6 @@ function calculateWinner(game) {
     }
   }
 
-  console.log(blackHole);
-
   const suckedInTilesDict = {
     A: [1, 6],
     B: [0, 2, 6, 7],
@@ -93,8 +91,6 @@ function calculateWinner(game) {
 
   const suckedInTiles = suckedInTilesDict[blackHole];
 
-  console.log(suckedInTiles);
-
   for (let i = 0; i < suckedInTiles.length; i++) {
     const tileToCheck = game.gameState[suckedInTiles[i]];
     playerScoreTiles[tileToCheck[0] === 'R' ? 0 : 1].push(tileToCheck.substring(1));
@@ -110,9 +106,6 @@ function calculateWinner(game) {
   for (let i = 0; i < player2ScoreTiles.length; i++) {
     player2Score += parseInt(player2ScoreTiles[i], 10);
   }
-
-  console.log(player1Score);
-  console.log(player2Score);
 
   // check win conditions
   // if the score is higher
@@ -155,7 +148,6 @@ const updateGameState = (currentState, activePlayer) => {
     // check if game piece needs to be colored in
     if (spaceToAdjust.style.backgroundColor === 'gray'
      && currentState.gameState[i] !== `${String.fromCharCode(65 + i).toUpperCase()}`) {
-      console.log(`difference on tile ${String.fromCharCode(65 + i)}`);
       const color = currentState.gameState[i].substring(0, 1);
       const number = currentState.gameState[i].substring(1);
       round = Math.floor(currentState.moveCount / 2) + 1;
@@ -180,11 +172,9 @@ const updateGameState = (currentState, activePlayer) => {
     let statusMessage = '';
     if (nextMove === activePlayer) {
       // say "it's your turn"
-      console.log('not active player');
       statusMessage = `${currentState.playerNames[currentState.moveCount % 2]}, place your ${round} piece.`;
     } else {
       // get other player's name and say it's their turn
-      console.log('active player');
       let playerToGo = currentState.playerNames[nextMove === 'Red' ? 0 : 1];
       if (playerToGo === '????????') {
         playerToGo = 'second player to join and';
@@ -195,8 +185,6 @@ const updateGameState = (currentState, activePlayer) => {
     }
     document.body.querySelector('#gameStatus').innerHTML = statusMessage;
   }
-
-  console.log(currentState);
   return currentState;
 };
 
@@ -230,7 +218,6 @@ async function gameLoop(game, activePlayer) {
   let updatedState = '';
   // opponent has made a move
   if (currentState.moveCount !== game.moveCount) {
-    console.log('change in game state');
     updatedState = await updateGameState(currentState, activePlayer);
     if (updatedState.moveCount === 20) {
       calculateWinner(updatedState);
@@ -260,8 +247,6 @@ const blackHoleLoad = async (gameID, activePlayer) => {
 
   // get gamestate
   const game = await utils.getGameState(gameID);
-
-  console.log(game);
 
   // set game variables
   round = Math.floor(game.moveCount / 2) + 1;
@@ -340,7 +325,6 @@ const blackHoleLoad = async (gameID, activePlayer) => {
   for (let i = 0; i < 21; i++) {
     const boardSpace = document.querySelector(`#blackHoleSpace${String.fromCharCode(65 + i)}`);
     if (boardSpace.style.backgroundColor !== 'gray') {
-      console.log('piece disabled');
       boardSpace.classList.add('isDisabled');
     }
   }
@@ -349,9 +333,6 @@ const blackHoleLoad = async (gameID, activePlayer) => {
   if (!game.active) {
     calculateWinner(game);
   }
-
-  console.log(game.moveCount);
-  console.log(game.playerNames);
   // if needed, prompt for player name -
   // else, just jump to set settings
   if (game.moveCount < 2
